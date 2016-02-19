@@ -8,12 +8,12 @@
 	</Plugins>
 	<StartDate>Tue Sep 08 02:36:17 CDT 2015</StartDate>
 	<ProjectName>Another_Blah</ProjectName>
-	<WorkingDir>D:\EASTWeb</WorkingDir>
+	<WorkingDir>C:\EASTWeb</WorkingDir>
 	<Masking>
-		<File>C:\Users\Michael DeVos\git\EastWeb.V2\Documentation\TestCases\ethiopia_amhara\settings\watermask\Ethiopia_watermask.tif</File>
+		<File>\Documentation\TestCases\ethiopia_amhara\settings\watermask\Ethiopia_watermask.tif</File>
 		<Resolution>1</Resolution>
 	</Masking>
-	<MasterShapeFile>C:\Users\Michael DeVos\git\EastWeb.V2\Documentation\TestCases\ethiopia_amhara\settings\shapefiles\Woreda_new\Woreda_new.shp</MasterShapeFile>
+	<MasterShapeFile>\Documentation\TestCases\ethiopia_amhara\settings\shapefiles\Woreda_new\Woreda_new.shp</MasterShapeFile>
 	<TimeZone>(GMT+0:00) Africa/Abidjan</TimeZone>
 	<Clipping>false</Clipping>
 	<FreezingDate>Wed Sep 09 02:37:12 CDT 1970</FreezingDate>
@@ -32,6 +32,6 @@
 	<FalseNothing>1</FalseNothing>
 	<ScalingFactor>1</ScalingFactor>
 	<Summaries>
-		<Summary ID="1">AreaNameField: W_NAME; Shape File Path: C:\Users\Michael DeVos\git\EastWeb.V2\Documentation\TestCases\ethiopia_amhara\settings\shapefiles\Woreda_new\Woreda_new.shp; AreaCodeField: W_CODE;</Summary>
+		<Summary ID="1">AreaNameField: W_NAME; Shape File Path: \Documentation\TestCases\ethiopia_amhara\settings\shapefiles\Woreda_new\Woreda_new.shp; AreaCodeField: W_CODE;</Summary>
 	</Summaries>
 </ProjectInfo>

@@ -133,7 +133,7 @@ public class GenericLocalRetrievalLocalDownloaderTest {
                 ));
         stmt.close();
 
-        Schemas.CreateProjectPluginSchema(con, testGlobalSchema, projectInfoFile, testPluginName, null, null, daysPerInputFile, filesPerDay, true);
+        Schemas.createProjectPluginSchema(con, testGlobalSchema, projectInfoFile, testPluginName, null, null, daysPerInputFile, filesPerDay, true);
     }
 
     /**

@@ -137,7 +137,7 @@ public class ProgressUpdaterTest {
                 Schemas.getSchemaName(projectName, pluginName)
                 );
         stmt.execute(query);
-        Schemas.CreateProjectPluginSchema(con, configInstance.getGlobalSchema(), projectMetaData, pluginName, configInstance.getSummaryCalculations(), null, daysPerInputData,
+        Schemas.createProjectPluginSchema(con, configInstance.getGlobalSchema(), projectMetaData, pluginName, configInstance.getSummaryCalculations(), null, daysPerInputData,
                 pluginData.Download.filesPerDay, false);
         progressUpdater = new ProgressUpdater(configInstance, projectMetaData, pluginMetaDataCollection);
     }

@@ -56,7 +56,7 @@ public class TestPW_TRMM3B42 {
 
         //ArrayList<String> extraDownloadFiles;
         //extraDownloadFiles.add("QC");
-        //        Schemas.CreateProjectPluginSchema(DatabaseConnector.getConnection(), "Test_EASTWeb", "Test_Project", "Test_Plugin", null, null, null,
+        //        Schemas.createProjectPluginSchema(DatabaseConnector.getConnection(), "Test_EASTWeb", "Test_Project", "Test_Plugin", null, null, null,
         //                pluginMetaData.DaysPerInputData, pluginMetaData.Download.filesPerDay,
         //                pluginMetaData.IndicesMetaData.size(), projectInfoFile.GetSummaries(), false);
 

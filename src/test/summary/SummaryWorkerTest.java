@@ -75,7 +75,7 @@ public class SummaryWorkerTest {
         stmt.close();
         con.close();
 
-        Schemas.CreateProjectPluginSchema(DatabaseConnector.getConnection(), configInstance.getGlobalSchema(), projectInfoFile, pluginName, configInstance.getSummaryCalculations(), null,
+        Schemas.createProjectPluginSchema(DatabaseConnector.getConnection(), configInstance.getGlobalSchema(), projectInfoFile, pluginName, configInstance.getSummaryCalculations(), null,
                 pluginMetaData.DaysPerInputData, pluginMetaData.Download.filesPerDay, false);
     }
 

@@ -95,7 +95,7 @@ public class SchemasTest {
         // Run method under test - defined for MODIS plugin
         ArrayList<String> tempCompNames = new ArrayList<String>(1);
         tempCompNames.add(compStrategy.getClass().getCanonicalName());
-        Schemas.CreateProjectPluginSchema(DatabaseConnector.getConnection(), testGlobalSchema, projectMetaData, testPluginName, summaryNames, tempCompNames, daysPerInputFile, filesPerDay,
+        Schemas.createProjectPluginSchema(DatabaseConnector.getConnection(), testGlobalSchema, projectMetaData, testPluginName, summaryNames, tempCompNames, daysPerInputFile, filesPerDay,
                 true);
         stmt.close();
     }
@@ -132,7 +132,7 @@ public class SchemasTest {
     }
 
     @Test
-    public final void testCreateProjectPluginSchema() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException {
+    public final void testcreateProjectPluginSchema() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException {
         Statement stmt = con.createStatement();
         ResultSet rs = null;
 
@@ -176,10 +176,10 @@ public class SchemasTest {
                 case "DownloadExtra": break;
                 case "TemporalSummaryCompositionStrategy": break;
                 case "ProjectSummary": break;
-                case "DownloadExpectedTotalOutput": break;
-                case "ProcessorExpectedTotalOutput": break;
-                case "IndicesExpectedTotalOutput": break;
-                case "SummaryExpectedTotalOutput": break;
+                case "DownloadTotalOutput": break;
+                case "ProcessorTotalOutput": break;
+                case "IndicesTotalOutput": break;
+                case "SummaryTotalOutput": break;
                 default: fail("Unknown table in test global schema: " + rs.getString("Name"));
                 }
             } while(rs.next());

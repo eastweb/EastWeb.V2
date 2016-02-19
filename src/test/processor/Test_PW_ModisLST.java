@@ -46,7 +46,7 @@ public class Test_PW_ModisLST {
         PluginMetaData pluginMetaData = PluginMetaDataCollection.getInstance(new File("C:\\Users\\yi.liu\\git\\EastWeb.V2\\plugins\\Plugin_ModisLST.xml")).pluginMetaDataMap.get(projectInfoFile.GetPlugins().get(0).GetName());
         //ArrayList<String> extraDownloadFiles;
         //extraDownloadFiles.add("QC");
-        //        Schemas.CreateProjectPluginSchema(DatabaseConnector.getConnection(), "Test_EASTWeb", "Test_Project", "Test_Plugin", null, null, null,
+        //        Schemas.createProjectPluginSchema(DatabaseConnector.getConnection(), "Test_EASTWeb", "Test_Project", "Test_Plugin", null, null, null,
         //                pluginMetaData.DaysPerInputData, pluginMetaData.Download.filesPerDay,
         //                pluginMetaData.IndicesMetaData.size(), projectInfoFile.GetSummaries(), false);
         //

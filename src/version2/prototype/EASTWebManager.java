@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -47,7 +48,7 @@ import version2.prototype.util.ParallelUtils.NamedThreadFactory;
  * @author michael.devos
  *
  */
-public class EASTWebManager implements Runnable, EASTWebManagerI{
+public class EASTWebManager implements Runnable, EASTWebManagerI, WebServiceI {
     protected static EASTWebManager instance = null;
     protected static ScheduledExecutorService backgroundThreadExecutor = null;
     protected static int defaultNumOfSimultaneousGlobalDLs = 1;
@@ -1431,5 +1432,49 @@ public class EASTWebManager implements Runnable, EASTWebManagerI{
             }
         }
         return schedulerId;
+    }
+
+    @Override
+    public ArrayList<String> GetProjects() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Boolean GetProjectStatus(String projectName) {
+        boolean goal = false;
+        synchronized(schedulerStatuses)
+        {
+            for(SchedulerStatus status : schedulerStatuses) {
+                if(status.ProjectName.equals(projectName)) {
+                    goal = (status.State == TaskState.RUNNING || status.State == TaskState.STARTED || status.State == TaskState.STARTING) ? true : false;
+                }
+            }
+        }
+        return goal;
+    }
+
+    @Override
+    public ArrayList<String> GetPluginsForProject(String projectName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ArrayList<String> GetProjectSummaryInfo(String projectName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public HashMap<LocalDate, String> GetProjectOutputListing(String pluginName, Integer summaryIDNum) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ArrayList<String> GetFile(String projectName, String pluginName, Integer summaryIDNum, String fileName) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

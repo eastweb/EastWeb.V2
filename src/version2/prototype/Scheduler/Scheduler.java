@@ -170,7 +170,7 @@ public class Scheduler {
                 pluginMetaData = pluginMetaDataCollection.pluginMetaDataMap.get(item.GetName());
                 new File(FileSystem.GetGlobalDownloadDirectory(configInstance, item.GetName(), pluginMetaData.Download.name)).mkdirs();
 
-                Schemas.CreateProjectPluginSchema(con, configInstance.getGlobalSchema(), projectInfoFile, item.GetName(), configInstance.getSummaryCalculations(),
+                Schemas.createProjectPluginSchema(con, configInstance.getGlobalSchema(), projectInfoFile, item.GetName(), configInstance.getSummaryCalculations(),
                         configInstance.getSummaryTempCompStrategies(), pluginMetaData.DaysPerInputData, pluginMetaData.Download.filesPerDay, true);
                 SetupProcesses(item, pluginMetaData);
             }
@@ -199,6 +199,21 @@ public class Scheduler {
         if(status != null) {
             manager.NotifyUI(status);
         }
+
+        // Update DB
+        switch(initState)
+        {
+        case RUNNING:
+        case STARTED:
+        case STARTING:
+            updateProjectProgressRunningStatus(true);
+            break;
+        case DELETING:
+        case STOPPED:
+        case STOPPING:
+            updateProjectProgressRunningStatus(false);
+        }
+
         System.out.println("Done setting up new Scheduler for project '" + data.projectInfoFile.GetProjectName() + "'.");
     }
 
@@ -283,6 +298,8 @@ public class Scheduler {
                 stmt.addBatch(String.format(updateQueryFormat, projectSchema, "IndicesCache"));
             }
             stmt.executeBatch();
+
+            updateProjectProgressRunningStatus(true);
             stmt.close();
         } catch(SQLException e) {
             ErrorLog.add(this, "Problem while updating caches to prepare for start or restart.", e);
@@ -329,6 +346,7 @@ public class Scheduler {
         if(myState == TaskState.STARTING || myState == TaskState.STOPPING) {
             return false;
         } else if(myState == TaskState.STOPPED){
+            updateProjectProgressRunningStatus(false);
             return true;
         }
 
@@ -387,6 +405,8 @@ public class Scheduler {
 
         if(!allStopped) {
             ErrorLog.add(this, "Timed out waiting for Process Workers to complete.", new Exception("Timed out waiting for Process Workers to complete."));
+
+            updateProjectProgressRunningStatus(false);
             return false;
         }
 
@@ -399,6 +419,8 @@ public class Scheduler {
                 return true;
             }
         }
+
+        updateProjectProgressRunningStatus(false);
 
         if(status != null) {
             manager.NotifyUI(status);
@@ -437,7 +459,8 @@ public class Scheduler {
         File projectDir;
         Statement stmt = null;
         String dropSchemaQueryFormat = "DROP SCHEMA \"%1$s\" CASCADE;";
-        String deleteFromExpectedTotalOutput = "delete from \"" + configInstance.getGlobalSchema() + "\".\"%1$sExpectedTotalOutput\" where \"ProjectID\"=%2$d;";
+        String dropTableExpectedTotalOutput = "DROP TABLE IF EXISTS \"" + configInstance.getGlobalSchema() + "\".\"%1$sExpectedTotalOutput\" CASCADE";
+        String deleteFromTotalOutput = "delete from \"" + configInstance.getGlobalSchema() + "\".\"%1$sTotalOutput\" where \"ProjectID\"=%2$d;";
         try {
             stmt = con.createStatement();
 
@@ -446,12 +469,17 @@ public class Scheduler {
                 projectSchema = Schemas.getSchemaName(projectInfoFile.GetProjectName(), item.GetName());
                 projectID = Schemas.getProjectID(configInstance.getGlobalSchema(), projectInfoFile.GetProjectName(), stmt);
                 stmt.addBatch(String.format(dropSchemaQueryFormat, projectSchema));
-                stmt.addBatch(String.format(deleteFromExpectedTotalOutput, "Download", projectID));
-                stmt.addBatch(String.format(deleteFromExpectedTotalOutput, "Processor", projectID));
-                stmt.addBatch(String.format(deleteFromExpectedTotalOutput, "Indices", projectID));
-                stmt.addBatch(String.format("delete from \"" + configInstance.getGlobalSchema() + "\".\"SummaryExpectedTotalOutput\" where \"ProjectSummaryID\"="
+                stmt.addBatch(String.format(dropTableExpectedTotalOutput, "Download"));
+                stmt.addBatch(String.format(dropTableExpectedTotalOutput, "Processor"));
+                stmt.addBatch(String.format(dropTableExpectedTotalOutput, "Indices"));
+                stmt.addBatch(String.format(dropTableExpectedTotalOutput, "Summary"));
+                stmt.addBatch(String.format(deleteFromTotalOutput, "Download", projectID));
+                stmt.addBatch(String.format(deleteFromTotalOutput, "Processor", projectID));
+                stmt.addBatch(String.format(deleteFromTotalOutput, "Indices", projectID));
+                stmt.addBatch(String.format("delete from \"" + configInstance.getGlobalSchema() + "\".\"SummaryTotalOutput\" where \"ProjectSummaryID\"="
                         + " any (select \"ProjectSummaryID\" from \"" + configInstance.getGlobalSchema() + "\".\"ProjectSummary\" where \"ProjectID\"=%1$d);", projectID));
                 stmt.addBatch(String.format("delete from \"" + configInstance.getGlobalSchema() + "\".\"ProjectSummary\" where \"ProjectID\"=%1$d", projectID));
+                stmt.addBatch(String.format("delete from \"" + configInstance.getGlobalSchema() + "\".\"ProjectProgress\" where \"ProjectID\"=%1$d", projectID));
                 stmt.addBatch(String.format("delete from \"" + configInstance.getGlobalSchema() + "\".\"Project\" where \"ProjectID\"=%1$d", projectID));
                 projectDir = new File(FileSystem.GetProjectDirectoryPath(projectInfoFile.GetWorkingDir(), projectInfoFile.GetProjectName()));
                 if(projectDir.exists()) {
@@ -643,6 +671,36 @@ public class Scheduler {
             ErrorLog.add(this, "Problem while updating status after starting new ProcessWorker.", e);
         }
         return manager.StartNewProcessWorker(sWorker);
+    }
+
+    protected void updateProjectProgressRunningStatus(boolean running) {
+        // Update database
+        DatabaseConnection con = DatabaseConnector.getConnection(configInstance);
+        Statement stmt = null;
+        try {
+            stmt = con.createStatement();
+            int projectID = Schemas.getProjectID(configInstance.getGlobalSchema(), projectInfoFile.GetProjectName(), stmt);
+            String query = "UPDATE \"" + configInstance.getGlobalSchema() + "\".\"ProjectProgress\" SET \"Running\"=" + running + " WHERE \"ProjectID\"=" + projectID + ";";
+            stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            if(stmt != null) {
+                try {
+                    stmt.close();
+                    con.close();
+                } catch (SQLException e1) {
+                    ErrorLog.add(this, "Problem while updating database for stopped project.", new Exception("Problem while updating database for stopped project."));
+                }
+            }
+            ErrorLog.add(this, "Problem while updating database for stopped project.", new Exception("Problem while updating database for stopped project."));
+        }
+        if(stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException e1) {
+                ErrorLog.add(this, "Problem while updating database for stopped project.", new Exception("Problem while updating database for stopped project."));
+            }
+        }
+        con.close();
     }
 
     protected void UpdateStatus() throws SQLException

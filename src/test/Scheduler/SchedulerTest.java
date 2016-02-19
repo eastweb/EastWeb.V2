@@ -210,22 +210,22 @@ public class SchedulerTest {
         }
 
         @Override
-        protected int getStoredDownloadExpectedTotalOutput(String projectName, String pluginName, String dataName, Statement stmt) throws SQLException {
+        protected int getStoredDownloadExpectedNumOfOutputs(int projectID, int pluginID, String dataName, Statement stmt) throws SQLException {
             return 0;
         }
 
         @Override
-        protected int getStoredProcessorExpectedTotalOutput(String projectName, String pluginName, Statement stmt) throws SQLException {
+        protected int getStoredProcessorExpectedNumOfOutputs(int projectID, int pluginID, Statement stmt) throws SQLException {
             return 0;
         }
 
         @Override
-        protected int getStoredIndicesExpectedTotalOutput(String projectName, String pluginName, Statement stmt) throws SQLException {
+        protected int getStoredIndicesExpectedNumOfOutputs(int projectID, int pluginID, Statement stmt) throws SQLException {
             return 0;
         }
 
         @Override
-        protected int getStoredSummaryExpectedTotalOutput(String projectName, String pluginName, int summaryIDNum, Statement stmt) throws SQLException {
+        protected int getStoredSummaryExpectedNumOfOutputs(int projectSummaryID, int pluginID, int summaryIDNum, Statement stmt) throws SQLException {
             return 0;
         }
     }

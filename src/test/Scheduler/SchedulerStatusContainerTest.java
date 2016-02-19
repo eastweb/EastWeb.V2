@@ -28,8 +28,6 @@ import version2.prototype.Scheduler.SchedulerStatus;
 import version2.prototype.Scheduler.SchedulerStatusContainer;
 import version2.prototype.download.ListDatesFiles;
 import version2.prototype.summary.temporal.TemporalSummaryCompositionStrategy;
-import version2.prototype.summary.temporal.TemporalSummaryRasterFileStore;
-import version2.prototype.summary.temporal.CompositionStrategies.GregorianWeeklyStrategy;
 import version2.prototype.util.DatabaseConnection;
 import version2.prototype.util.DatabaseConnector;
 import version2.prototype.util.ProgressUpdater;
@@ -119,7 +117,7 @@ public class SchedulerStatusContainerTest {
         stmt.execute(query);
         ArrayList<String> tempCompNames = new ArrayList<String>(1);
         tempCompNames.add(temporalSummaryCompositionStrategyClassName);
-        Schemas.CreateProjectPluginSchema(con, globalSchema, projectMetaData, pluginName, configInstance.getSummaryCalculations(), tempCompNames, 1, 1, false);
+        Schemas.createProjectPluginSchema(con, globalSchema, projectMetaData, pluginName, configInstance.getSummaryCalculations(), tempCompNames, 1, 1, false);
         SchedulerStatusContainerTest tester = new SchedulerStatusContainerTest();
         container = new SchedulerStatusContainer(configInstance, 1, startDate, tester.new MyProgressUpdater(configInstance, projectMetaData, pluginMetaDataCollection), projectMetaData, pluginMetaDataCollection,
                 TaskState.STOPPED);
@@ -335,22 +333,22 @@ public class SchedulerStatusContainerTest {
         }
 
         @Override
-        protected int getStoredDownloadExpectedTotalOutput(String projectName, String pluginName, String dataName, Statement stmt) throws SQLException {
+        protected int getStoredDownloadExpectedNumOfOutputs(int projectID, int pluginID, String dataName, Statement stmt) throws SQLException {
             return 0;
         }
 
         @Override
-        protected int getStoredProcessorExpectedTotalOutput(String projectName, String pluginName, Statement stmt) throws SQLException {
+        protected int getStoredProcessorExpectedNumOfOutputs(int projectID, int pluginID, Statement stmt) throws SQLException {
             return 0;
         }
 
         @Override
-        protected int getStoredIndicesExpectedTotalOutput(String projectName, String pluginName, Statement stmt) throws SQLException {
+        protected int getStoredIndicesExpectedNumOfOutputs(int projectID, int pluginID, Statement stmt) throws SQLException {
             return 0;
         }
 
         @Override
-        protected int getStoredSummaryExpectedTotalOutput(String projectName, String pluginName, int summaryIDNum, Statement stmt) throws SQLException {
+        protected int getStoredSummaryExpectedNumOfOutputs(int projectSummaryID, int pluginID, int summaryIDNum, Statement stmt) throws SQLException {
             return 0;
         }
     }
