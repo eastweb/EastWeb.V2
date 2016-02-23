@@ -3,24 +3,22 @@
  */
 package version2.prototype;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 /**
  * @author michael.devos
  *
  */
 public interface WebServiceI {
-    public ArrayList<String> GetProjects();
+    public String[] GetProjects();
 
-    public Boolean GetProjectStatus(String projectName);
+    public Boolean getProjectStatus(String projectName);
 
-    public ArrayList<String> GetPluginsForProject(String projectName);
+    public String[] getPluginsForProject(String projectName);
 
-    public ArrayList<String> GetProjectSummaryInfo(String projectName);
+    public String[] getIndicesForProject(String projectName);
 
-    public HashMap<LocalDate, String> GetProjectOutputListing(String pluginName, Integer summaryIDNum);
+    public String[] getProjectSummaryInfo(String projectName);
 
-    public ArrayList<String> GetFile(String projectName, String pluginName, Integer summaryIDNum, String fileName);
+    public String[] getProjectOutputListing(String projectName, String pluginName, String index, Integer summaryIDNum);
+
+    public String[] getFile(String projectName, String pluginName, String index, int year, int dayOfyear, Integer summaryIDNum, String fileName);
 }
