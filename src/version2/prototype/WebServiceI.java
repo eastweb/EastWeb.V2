@@ -15,6 +15,8 @@ public interface WebServiceI {
     public String[] getPluginsForProject(String projectName);
 
     public String[] getIndicesForProject(String projectName);
+	
+    public String[] getIndicesForProject(String projectName, String pluginName);
 
     public String[] getProjectSummaryInfo(String projectName);
 

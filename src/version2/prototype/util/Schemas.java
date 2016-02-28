@@ -100,7 +100,7 @@ public class Schemas {
             int projectID = addProject(globalEASTWebSchema, projectMetaData.GetProjectName(), dateGroupID, stmt);
 
             // Add entry to Plugin table if not already existing
-            addPlugin(globalEASTWebSchema, pluginName, daysPerInputFile, filesPerDay, stmt);
+            int pluginID = addPlugin(globalEASTWebSchema, pluginName, daysPerInputFile, filesPerDay, stmt);
 
             // Add summaries to ProjectSummary table
             if(projectMetaData.GetSummaries() != null)
@@ -134,6 +134,10 @@ public class Schemas {
             // Create ProjectProgress table
             createProjectProgressTableIfNotExists(globalEASTWebSchema, stmt, createTablesWithForeignKeyReferences);
             addProjectProgress(globalEASTWebSchema, projectID, stmt);
+
+            // Create ProjectPlugins table
+            createProjectIndexTableIfNotExists(globalEASTWebSchema, stmt, createTablesWithForeignKeyReferences);
+            addProjectIndex(globalEASTWebSchema, projectID, pluginID, stmt);
         }
         catch(SQLException e)
         {
@@ -433,6 +437,40 @@ public class Schemas {
         return getOrInsertIfMissingID(selectQuery, "PluginID", insertQuery, stmt);
     }
 
+    private static void addProjectIndex(String globalEASTWebSchema, Integer projectID, Integer indexID, Statement stmt) throws SQLException {
+        if(globalEASTWebSchema == null || projectID == null || indexID == null || stmt == null) {
+            return;
+        }
+
+        String selectQuery = String.format("SELECT \"ProjectPluginID\" FROM \"%1$s\".\"ProjectIndex\" " +
+                "WHERE \"ProjectID\"=%2$d AND \"IndexID\"=%3$d;",
+                globalEASTWebSchema,
+                projectID,
+                indexID
+                );
+        String insertQuery = String.format(
+                "INSERT INTO \"%1$s\".\"ProjectIndex\" (\"ProjectID\", \"IndexID\") VALUES (%2$d, %3$d);",
+                globalEASTWebSchema,
+                projectID,
+                indexID
+                );
+
+        addRowIFNotExistent(selectQuery, insertQuery, stmt);
+    }
+
+    private static void createProjectIndexTableIfNotExists(String globalEASTWebSchema, Statement stmt, boolean createTablesWithForeignKeyReferences) throws SQLException {
+        if(globalEASTWebSchema == null || stmt == null) {
+            return;
+        }
+
+        String query = "CREATE TABLE IF NOT EXISTS \"" + globalEASTWebSchema + "\".\"ProjectIndex\" (\n" +
+                "   \"ProjectPluginID\" serial PRIMARY KEY, \n" +
+                "   \"ProjectID\" integer " + (createTablesWithForeignKeyReferences ? "REFERENCES \"" + globalEASTWebSchema + "\".\"Project\" (\"ProjectID\") " : "") + "NOT NULL, \n" +
+                "   \"IndexID\" integer " + (createTablesWithForeignKeyReferences ? "REFERENCES \"" + globalEASTWebSchema + "\".\"Index\" (\"IndexID\") " : "") + "NOT NULL \n" +
+                ")";
+        stmt.executeUpdate(query);
+    }
+
     private static int addProject(final String globalEASTWebSchema, final String projectName, final Integer dateGroupID, final Statement stmt) throws SQLException {
         if(globalEASTWebSchema == null || dateGroupID == null || dateGroupID == -1) {
             return -1;
@@ -450,8 +488,8 @@ public class Schemas {
         return getOrInsertIfMissingID(selectQuery, "ProjectID", insertQuery, stmt);
     }
 
-    private static void addProjectProgress(String globalEASTWebSchema, int projectID, Statement stmt) throws SQLException {
-        if(globalEASTWebSchema == null || stmt == null) {
+    private static void addProjectProgress(String globalEASTWebSchema, Integer projectID, Statement stmt) throws SQLException {
+        if(globalEASTWebSchema == null || projectID == null || stmt == null) {
             return;
         }
 
@@ -669,7 +707,7 @@ public class Schemas {
                         ));
         for(String summary : summaryNames)
         {
-            query_.append(",\n  \"" + summary + "\" double precision NOT NULL");
+            query_.append(",\n  \"" + summary + "\" double precision");
         }
         query_.append("\n)");
         stmt.executeUpdate(query_.toString());
