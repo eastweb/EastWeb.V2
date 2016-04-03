@@ -197,6 +197,8 @@ public class MainWindow {
                 }
             }
         });
+
+
         createNewPlugin.setMnemonic(KeyEvent.VK_B);
         mnFile.add(createNewPlugin);
         mnFile.addSeparator();
