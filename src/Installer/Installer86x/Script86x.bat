@@ -13,6 +13,7 @@ rem copy project from desktop to installer folder (this prevents infinite loop)
 rem then remove project form desktop
 robocopy "%temp%\EastWeb.V2" "%~dp0..\EastWeb.V2" /mir /mt[:18]
 @RD /S /Q "%temp%\EastWeb.V2"
+del "%~dp0..\EastWeb.V2\projects\*.*"
 pause
 
 rem compile installer 
