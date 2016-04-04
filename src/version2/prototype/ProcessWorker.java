@@ -82,7 +82,10 @@ public abstract class ProcessWorker implements Callable<ProcessWorkerReturn> {
     @Override
     public ProcessWorkerReturn call() throws Exception {
         if((process.getState() == TaskState.STARTED || process.getState() == TaskState.STARTING || process.getState() == TaskState.RUNNING) && !Thread.currentThread().isInterrupted()) {
-            return process();
+            // Common prep code
+            ProcessWorkerReturn retVal = process();
+            // Common cleanup code
+            return retVal;
         } else {
             return null;
         }
