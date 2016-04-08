@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
@@ -37,6 +38,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.ws.Endpoint;
 
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.DOMException;
@@ -47,6 +49,7 @@ import version2.prototype.EASTWebManager;
 import version2.prototype.ErrorLog;
 import version2.prototype.GUIUpdateHandler;
 import version2.prototype.TaskState;
+import version2.prototype.WebServiceImpl;
 import version2.prototype.EastWebUI.ProgressUI.ProjectProgress;
 import version2.prototype.EastWebUI.ProjectInformationUI.ProjectInformationPage;
 import version2.prototype.EastWebUI.QueryUI.QueryUI;
@@ -76,6 +79,7 @@ public class MainWindow {
             @Override
             public void run() {
                 EASTWebManager.Start();
+                Endpoint.publish("http://localhost:9999/ws/EASTWebService", new WebServiceImpl());
             }
         });
 
