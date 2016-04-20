@@ -54,6 +54,9 @@ public class ModisNBARNDVI extends IndicesFramework {
             //            return -3.40282346639e+038;
             return noDataValue;
         } else {
+            for(int i=0; i < values.length; i++) {
+                values[i] = values[i] / 10000;
+            }
             return (values[NIR] - values[RED]) / (values[RED] + values[NIR]);
         }
     }
