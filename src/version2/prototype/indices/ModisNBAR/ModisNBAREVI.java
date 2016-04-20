@@ -8,6 +8,8 @@ import version2.prototype.indices.IndicesFramework;
 /**
  * EVI = G * (NIR - RED)/(NIR + C1*RED - C2*BLUE + L) where L=1, C1=6, C2=7.5, and G=2.5
  *
+ * http://wiki.landscapetoolbox.org/doku.php/remote_sensing_methods:enhanced_vegetation_index
+ *
  *@author Isaiah Snell-Feikema
  */
 
@@ -66,7 +68,7 @@ public class ModisNBAREVI extends IndicesFramework
     /**
      * Valid input value range: 0 to 32766
      * Possible output value range: -163800.0 to 163770.0
-     * Valid output value range:
+     * Valid output value range: valid range is suspected to be near the same as possible output range
      */
     @Override
     protected double calculatePixelValue(double[] values) throws Exception {
@@ -75,8 +77,12 @@ public class ModisNBAREVI extends IndicesFramework
             //            return -3.40282346639e+038;
             return noDataValue;
         } else {
-            return G * (values[NIR] - values[RED])
-                    / (values[NIR] + C1 * values[RED] - C2 * values[BLUE] + L);
+            for(int i=0; i < values.length; i++) {
+                values[i] = values[i] / 10000;
+            }
+            double top = G * (values[NIR] - values[RED]);
+            double bottom = (values[NIR] + C1 * values[RED] - C2 * values[BLUE] + L);
+            return top / bottom;
         }
     }
 
