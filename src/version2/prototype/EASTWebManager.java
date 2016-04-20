@@ -1093,22 +1093,23 @@ public class EASTWebManager implements Runnable, EASTWebManagerI{
         boolean successful = false;
         DatabaseConnection con = null;
         Statement stmt = null;
-        con = DatabaseConnector.getConnection(configInstance);
-        if(con != null) {
-            try {
+        try {
+            con = DatabaseConnector.getConnection(configInstance);
+
+            if(con != null) {
                 stmt = con.createStatement();
                 successful = stmt.execute("SELECT 1;");
-            } catch (SQLException e) {
-                ErrorLog.add(configInstance, "Could not establish connection with database.", e);
-            } finally {
-                try {
-                    if(stmt != null) {
-                        stmt.close();
-                    }
-                } catch (SQLException e) { /* do nothing */ }
-                if(con != null) {
-                    con.close();
+            }
+        } catch (Exception e) {
+            ErrorLog.add(configInstance, "Could not establish connection with database.", e);
+        } finally {
+            try {
+                if(stmt != null) {
+                    stmt.close();
                 }
+            } catch (SQLException e) { /* do nothing */ }
+            if(con != null) {
+                con.close();
             }
         }
         return successful;
