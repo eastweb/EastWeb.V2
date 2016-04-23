@@ -1,0 +1,31 @@
+--- This is the documentation for the installer
+
+--- Prerequisite
+	- batch file 
+	- window registry
+	- basic scripting language
+	- inno setup
+		- read the documentation of the inno setup utility (this provides a GUI for debugging) 
+			- http://inno-setup.en.softonic.com/
+			- http://inno-setup.en.softonic.com/download
+		- read the documentaiton on the compiler 
+			- our installer uses the raw compiler so you should understand what it is doing
+		- if any changes needs to be done on the compiler side be sure you are testing it on a VM. Changes to your registry will mess up 
+		  any/all functionality !!!!!!!!
+
+--- How to run the installer
+	- Navigate to the installer choice
+		- there is an 86x and 64x (only the 86x is support due to gdal libs)
+	- run the bat file
+		- there will be some user input during the run 
+		- most of them are for debugging purposes 
+		- during file copy, there will be a user input for Y/N (choose Y to delete the unessacry dir)
+		- at the end of the bat file, inno setup will start compiling your installer
+		- inno setup will create a output director at the location of your bat file 
+		- inside the bat will be a exe file 
+			- exe is universal for all window 
+			- the file should be around 140MB - 160MB if it is bigger or smaller than that size, check the installer and ensure  
+			  that the installer has all the right binaries 
+			- if not, use the inno setup utility to debug the installer 
+
+

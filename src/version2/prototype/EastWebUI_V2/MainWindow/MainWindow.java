@@ -413,7 +413,7 @@ public class MainWindow {
     private void openManual() {
         try {
             String dir =  System.getProperty("user.dir");
-            File pdfFile = new File(String.format("%s\\Documentation\\EASTWebV2.0_Manual.pdf", dir));
+            File pdfFile = new File(String.format("%s\\currentManual\\EASTWebV2.0_Manual.pdf", dir));
             if (pdfFile.exists()) {
 
                 if (Desktop.isDesktopSupported()) {

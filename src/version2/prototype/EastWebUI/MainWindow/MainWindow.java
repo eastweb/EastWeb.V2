@@ -249,6 +249,12 @@ public class MainWindow {
         mnHelp.add(mntmSettings);
 
         JMenuItem mntmManual = new JMenuItem("Manual", KeyEvent.VK_T);
+        mntmManual.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                openManual();
+            }
+        });
         mnHelp.add(mntmManual);
 
         menuBar.setBounds(0, 0, 1201, 25);
@@ -418,6 +424,29 @@ public class MainWindow {
         for(ProjectInfoFile project : projects)
         {
             projectList.addItem(project.GetProjectName());
+        }
+    }
+
+    private void openManual() {
+        try {
+            String dir =  System.getProperty("user.dir");
+            File pdfFile = new File(String.format("%s\\currentManual\\EASTWebV2.0_Manual.pdf", dir));
+            if (pdfFile.exists()) {
+
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(pdfFile);
+                } else {
+                    System.out.println("Awt Desktop is not supported!");
+                }
+
+            } else {
+                System.out.println("File is not exists!");
+            }
+
+            System.out.println("Done");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
