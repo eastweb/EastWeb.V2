@@ -1,7 +1,6 @@
 @echo off
 
 rem delete old output and project
-@RD /S /Q "%~dp0..\Installer64x\Output"
 @RD /S /Q "%~dp0..\Installer86x\Output"
 pause
 

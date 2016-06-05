@@ -236,6 +236,7 @@ public class SettingsUI {
     // populate advance UI (for threading purposes)
     private void advanceUI() throws IOException {
         JButton btnAdvanceSettings = new JButton("");
+        btnAdvanceSettings.setToolTipText("Advance Settings");
         btnAdvanceSettings.setBounds(750, 10, 45, 40);
         btnAdvanceSettings.setIcon(new ImageIcon(SettingsUI.class.getResource("/version2/prototype/Images/cog.png")));
         btnAdvanceSettings.addActionListener(new ActionListener() {
