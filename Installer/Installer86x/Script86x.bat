@@ -24,6 +24,7 @@ del "%~dp0..\EastWeb.V2\projects\*.*"
 
 @RD /S /Q "%~dp0..\EastWeb.V2\lib"
 @RD /S /Q "%~dp0..\EastWeb.V2\sources"
+@RD /S /Q "%~dp0..\EastWeb.V2\src"
 pause
 
 rem compile installer 

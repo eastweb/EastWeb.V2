@@ -16,7 +16,6 @@ import jdk.nashorn.internal.ir.annotations.Immutable;
 import version2.prototype.Config;
 import version2.prototype.Projection;
 import version2.prototype.Projection.ResamplingType;
-import version2.prototype.EastWebUI_V2.PluginUI_v2.IPlugin;
 import version2.prototype.util.FileSystem;
 import version2.prototype.ZonalSummary;
 
@@ -159,8 +158,6 @@ import version2.prototype.ZonalSummary;
      */
     @SuppressWarnings("unchecked")
     public ArrayList<ProjectInfoPlugin> GetPlugins() { return (ArrayList<ProjectInfoPlugin>) plugins.clone(); }
-
-    public ArrayList<IPlugin> GetIPlugins() { return new ArrayList<IPlugin>(); }
 
     /**
      * Gets the start date gotten from the once parsed xml file.
