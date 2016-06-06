@@ -515,12 +515,24 @@ public class Schemas {
                                 "  \"DateGroupID\" integer " + (createTablesWithForeignKeyReferences ? "REFERENCES \"%2$s\".\"DateGroup\" (\"DateGroupID\") " : "") + "NOT NULL,\n" +
                                 "  \"IndexID\" integer " + (createTablesWithForeignKeyReferences ? "REFERENCES \"%2$s\".\"Index\" (\"IndexID\") " : "") + "DEFAULT NULL,\n" +
                                 "  \"Retrieved\" boolean DEFAULT FALSE,\n" +
-                                "  \"Processed\" boolean DEFAULT FALSE\n" +
+                                "  \"Processed\" boolean DEFAULT FALSE,\n" +
+                                "  \"TimeStamp\" timestamp without time zone\n" +
                                 ")",
                                 mSchemaName,
                                 globalEASTWebSchema
                         ));
         stmt.executeUpdate(query_.toString());
+
+        ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns " +
+                "WHERE table_schema='" + mSchemaName + "' and table_name='IndicesCache' and column_name='TimeStamp';");
+        if(rs == null || !rs.next())
+        {
+            stmt.executeUpdate("ALTER TABLE \"" + mSchemaName + "\".\"IndicesCache\" ADD COLUMN \"TimeStamp\" timestamp without time zone;");
+        }
+
+        if(rs != null) {
+            rs.close();
+        }
     }
 
     private static void createProcessorCacheTableIfNotExists(final String globalEASTWebSchema, final Statement stmt, final String mSchemaName, final boolean createTablesWithForeignKeyReferences)
@@ -538,12 +550,24 @@ public class Schemas {
                                 "  \"DataFilePath\" varchar(255) UNIQUE NOT NULL,\n" +
                                 "  \"DateGroupID\" integer " + (createTablesWithForeignKeyReferences ? "REFERENCES \"%2$s\".\"DateGroup\" (\"DateGroupID\") " : "") + "NOT NULL,\n" +
                                 "  \"Retrieved\" boolean DEFAULT FALSE,\n" +
-                                "  \"Processed\" boolean DEFAULT FALSE\n" +
+                                "  \"Processed\" boolean DEFAULT FALSE,\n" +
+                                "  \"TimeStamp\" timestamp without time zone\n" +
                                 ")",
                                 mSchemaName,
                                 globalEASTWebSchema
                         ));
         stmt.executeUpdate(query_.toString());
+
+        ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns " +
+                "WHERE table_schema='" + mSchemaName + "' and table_name='ProcessorCache' and column_name='TimeStamp';");
+        if(rs == null || !rs.next())
+        {
+            stmt.executeUpdate("ALTER TABLE \"" + mSchemaName + "\".\"ProcessorCache\" ADD COLUMN \"TimeStamp\" timestamp without time zone;");
+        }
+
+        if(rs != null) {
+            rs.close();
+        }
     }
 
     private static void createDownloadCacheExtraTableIfNotExists(final String globalEASTWebSchema, final Statement stmt, final String mSchemaName, final boolean createTablesWithForeignKeyReferences)
@@ -565,12 +589,24 @@ public class Schemas {
                                 "  \"DownloadCacheID\" integer " + (createTablesWithForeignKeyReferences ? "REFERENCES \"%1$s\".\"DownloadCache\" (\"DownloadCacheID\") " : "") + "DEFAULT NULL,\n" +
                                 "  \"Retrieved\" boolean DEFAULT FALSE,\n" +
                                 "  \"Processed\" boolean DEFAULT FALSE,\n" +
-                                "  \"Complete\" boolean DEFAULT FALSE\n" +
+                                "  \"Complete\" boolean DEFAULT FALSE,\n" +
+                                "  \"TimeStamp\" timestamp without time zone\n" +
                                 ")",
                                 mSchemaName,
                                 globalEASTWebSchema
                         ));
         stmt.executeUpdate(query_.toString());
+
+        ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns " +
+                "WHERE table_schema='" + mSchemaName + "' and table_name='DownloadCacheExtra' and column_name='TimeStamp';");
+        if(rs == null || !rs.next())
+        {
+            stmt.executeUpdate("ALTER TABLE \"" + mSchemaName + "\".\"DownloadCacheExtra\" ADD COLUMN \"TimeStamp\" timestamp without time zone;");
+        }
+
+        if(rs != null) {
+            rs.close();
+        }
     }
 
     private static void createDownloadCacheTableIfNotExists(final String globalEASTWebSchema, final Statement stmt, final String mSchemaName, boolean createTablesWithForeignKeyReferences) throws SQLException {
@@ -589,12 +625,24 @@ public class Schemas {
                                 "  \"DateGroupID\" integer " + (createTablesWithForeignKeyReferences ? "REFERENCES \"%2$s\".\"DateGroup\" (\"DateGroupID\") " : "") + "NOT NULL,\n" +
                                 "  \"Retrieved\" boolean DEFAULT FALSE,\n" +
                                 "  \"Processed\" boolean DEFAULT FALSE,\n" +
-                                "  \"Complete\" boolean DEFAULT FALSE\n" +
+                                "  \"Complete\" boolean DEFAULT FALSE,\n" +
+                                "  \"TimeStamp\" timestamp without time zone\n" +
                                 ")",
                                 mSchemaName,
                                 globalEASTWebSchema
                         ));
         stmt.executeUpdate(query_.toString());
+
+        ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns " +
+                "WHERE table_schema='" + mSchemaName + "' and table_name='DownloadCache' and column_name='TimeStamp';");
+        if(rs == null || !rs.next())
+        {
+            stmt.executeUpdate("ALTER TABLE \"" + mSchemaName + "\".\"DownloadCache\" ADD COLUMN \"TimeStamp\" timestamp without time zone;");
+        }
+
+        if(rs != null) {
+            rs.close();
+        }
     }
 
     private static void createZonalStatTableIfNotExists(final String globalEASTWebSchema, final String mSchemaName, final ArrayList<String> summaryNames, final Statement stmt,
@@ -622,8 +670,19 @@ public class Schemas {
         {
             query_.append(",\n  \"" + summary + "\" double precision");
         }
-        query_.append("\n)");
+        query_.append(",\n\"TimeStamp\" timestamp without time zone);");
         stmt.executeUpdate(query_.toString());
+
+        ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns " +
+                "WHERE table_schema='" + mSchemaName + "' and table_name='ZonalStat' and column_name='TimeStamp';");
+        if(rs == null || !rs.next() || rs.getString("column_name").equals(""))
+        {
+            stmt.executeUpdate("ALTER TABLE \"" + mSchemaName + "\".\"ZonalStat\" ADD COLUMN \"TimeStamp\" timestamp without time zone;");
+        }
+
+        if(rs != null) {
+            rs.close();
+        }
     }
 
     private static void createIndexTableIfNotExists(final String globalEASTWebSchema, final Statement stmt) throws SQLException {

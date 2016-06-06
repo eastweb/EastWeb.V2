@@ -380,8 +380,8 @@ public class DatabaseCache extends Observable{
         if(dataName.toLowerCase().equals("data"))
         {
             insertQuery = new StringBuilder(String.format(
-                    "INSERT INTO \"%1$s\".\"DownloadCache\" (\"DownloadID\", \"DataFilePath\", \"DateGroupID\") " +
-                            "SELECT D.\"DownloadID\", D.\"DataFilePath\", D.\"DateGroupID\" " +
+                    "INSERT INTO \"%1$s\".\"DownloadCache\" (\"DownloadID\", \"DataFilePath\", \"DateGroupID\", \"TimeStamp\") " +
+                            "SELECT D.\"DownloadID\", D.\"DataFilePath\", D.\"DateGroupID\", now() " +
                             "FROM \"%2$s\".\"Download\" D " +
                             "INNER JOIN \"%2$s\".\"DateGroup\" G ON D.\"DateGroupID\" = G.\"DateGroupID\" " +
                             "LEFT JOIN \"%1$s\".\"DownloadCache\" C ON D.\"DownloadID\" = C.\"DownloadID\" " +
@@ -404,8 +404,8 @@ public class DatabaseCache extends Observable{
         else{
             // Set up for DownloadExtra to DownloadCacheExtra insert
             insertQuery = new StringBuilder(String.format(
-                    "INSERT INTO \"%1$s\".\"DownloadCacheExtra\" (\"DownloadExtraID\", \"DataName\", \"FilePath\", \"DateGroupID\") " +
-                            "SELECT D.\"DownloadExtraID\", D.\"DataName\", D.\"FilePath\", D.\"DateGroupID\" " +
+                    "INSERT INTO \"%1$s\".\"DownloadCacheExtra\" (\"DownloadExtraID\", \"DataName\", \"FilePath\", \"DateGroupID\", \"TimeStamp\") " +
+                            "SELECT D.\"DownloadExtraID\", D.\"DataName\", D.\"FilePath\", D.\"DateGroupID\", now() " +
                             "FROM \"%2$s\".\"DownloadExtra\" D ",
                             mSchemaName,
                             globalEASTWebSchema
@@ -599,8 +599,8 @@ public class DatabaseCache extends Observable{
         }
         StringBuilder query = new StringBuilder(String.format(
                 "INSERT INTO \"%1$s\".\"%2$s\" \n" +
-                        "(\"DataFilePath\", \"DateGroupID\"" + indexIDSelectString + ") VALUES \n" +
-                        "('" + temp.dataFilePath + "', " + dateGroupID + indexIDValueString + ")",
+                        "(\"DataFilePath\", \"DateGroupID\"" + indexIDSelectString + ", \"TimeStamp\") VALUES \n" +
+                        "('" + temp.dataFilePath + "', " + dateGroupID + indexIDValueString + ", now())",
                         mSchemaName,
                         cacheToTableName
                 ));
@@ -613,7 +613,7 @@ public class DatabaseCache extends Observable{
                 indexID = Schemas.getIndexID(globalSchema, temp.indexNm, stmt);
                 indexIDValueString = ", " + indexID;
             }
-            query.append(",\n('" + temp.dataFilePath + "', " + dateGroupID + indexIDValueString + ")");
+            query.append(",\n('" + temp.dataFilePath + "', " + dateGroupID + indexIDValueString + ", now())");
         }
         query.append(";");
         stmt.execute(query.toString());
@@ -686,7 +686,8 @@ public class DatabaseCache extends Observable{
                     + "\"AreaCode\", "
                     + "\"DateGroupID\", "
                     + "\"IndexID\", "
-                    + "\"FilePath\""
+                    + "\"FilePath\","
+                    + "\"TimeStamp\""
                     );
             for(String summarySimpleName : newResults.get(0).summaryResults.keySet())
             {
@@ -747,6 +748,8 @@ public class DatabaseCache extends Observable{
                         new Exception("Summary db insert failed for date: Year=" + year + ", DayOfYear=" + day + "."));
             }
             //            conn.commit();
+
+            stmt.execute("UPDATE \"%s\".\"ZonalStat\" SET \"TimeStamp\"=now() WHERE \"TimeStamp\" is null;");
 
             // Update progress bar
             scheduler.UpdateSummaryProgress(summaryIDNum, compStrategy, daysPerInputData, pluginInfo, stmt);
