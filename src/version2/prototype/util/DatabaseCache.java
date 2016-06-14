@@ -686,8 +686,7 @@ public class DatabaseCache extends Observable{
                     + "\"AreaCode\", "
                     + "\"DateGroupID\", "
                     + "\"IndexID\", "
-                    + "\"FilePath\","
-                    + "\"TimeStamp\""
+                    + "\"FilePath\""
                     );
             for(String summarySimpleName : newResults.get(0).summaryResults.keySet())
             {
@@ -749,7 +748,7 @@ public class DatabaseCache extends Observable{
             }
             //            conn.commit();
 
-            stmt.execute("UPDATE \"%s\".\"ZonalStat\" SET \"TimeStamp\"=now() WHERE \"TimeStamp\" is null;");
+            stmt.execute("UPDATE \"" + mSchemaName + "\".\"ZonalStat\" SET \"TimeStamp\"=now() WHERE \"TimeStamp\" is null;");
 
             // Update progress bar
             scheduler.UpdateSummaryProgress(summaryIDNum, compStrategy, daysPerInputData, pluginInfo, stmt);
