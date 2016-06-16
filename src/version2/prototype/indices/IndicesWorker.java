@@ -220,4 +220,10 @@ public class IndicesWorker extends ProcessWorker{
         }
         return null;
     }
+
+    @Override
+    public boolean verifyResults() {
+        // TODO Auto-generated method stub
+        return true;
+    }
 }

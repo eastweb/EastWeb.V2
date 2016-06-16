@@ -1,8 +1,12 @@
 package version2.prototype.summary;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +33,7 @@ import version2.prototype.util.DatabaseConnection;
 import version2.prototype.util.DatabaseConnector;
 import version2.prototype.util.FileSystem;
 import version2.prototype.util.IndicesFileMetaData;
+import version2.prototype.util.Schemas;
 
 /**
  * @author michael.devos
@@ -207,6 +212,29 @@ public class SummaryWorker extends ProcessWorker {
 
         con.close();
         return new ProcessWorkerReturn(outputFiles);
+    }
+
+    @Override
+    public boolean verifyResults() {
+
+        String url = "jdbc:postgresql://localhost:5432/" + configInstance.getDatabaseName();
+        Connection con;
+        try {
+            con = DriverManager.getConnection(url, configInstance.getDatabaseUsername(), configInstance.getDatabasePassword());
+
+            for(ProjectInfoSummary summary: projectInfoFile.GetSummaries())
+            {
+                return UpdateForMissingSummaries.findMissingSummaries(con, projectInfoFile.GetWorkingDir() + "\\projects", configInstance.getGlobalSchema(), Schemas.getSchemaName(projectInfoFile.GetProjectName(), pluginInfo.GetName()),
+                        projectInfoFile.GetProjectName(), projectInfoFile.GetStartDate(), "Summary " + summary.GetID(), pluginMetaData.DaysPerInputData, fileStores.get(summary.GetID()).compStrategy.maxNumberOfDaysInComposite());
+            }
+
+            con.close();
+        } catch (SQLException|NumberFormatException|ClassNotFoundException|FileNotFoundException e) {
+            ErrorLog.add(process, "Problem identifying missing summaries", e);
+        }
+
+        return true;
+
     }
 
 }
