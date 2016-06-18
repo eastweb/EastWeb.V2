@@ -82,7 +82,7 @@ public class SchedulerWorker implements Callable<ProcessWorkerReturn> {
 
             // System.out.println(attemptUpdate);
 
-            if(download == 100 && processor == 100 && indicies == 100 && summary == 100)
+            if(download >= 100 && processor >= 100 && indicies >= 100 && summary >= 100)
             {
                 if(worker.verifyResults() == false)
                 {
