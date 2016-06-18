@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 
 import version2.prototype.util.Schemas;
 
@@ -65,7 +65,7 @@ public class UpdateForMissingSummaries {
         LocalDate startDate = LocalDate.parse(start, dtf);
 
         final String rootDir = "C:\\eastweb\\Projects";
-        findMissingSummaries(con, rootDir, "EASTWeb", schema, projectName, startDate, summaryName, inDayCount, outDayCount);
+        findMissingSummaries(con, rootDir, "EASTWeb", schema, projectName, startDate, summaryName, inDayCount, outDayCount, false);
         con.close();
     }
 
@@ -75,15 +75,19 @@ public class UpdateForMissingSummaries {
      * @param globalSchema  - database schema name of the global schema (usually: "EASTWeb")
      * @param projectSchema  - database schema name of the project and plugin
      * @param projectName  - project name
+     * @param startDate
+     * @param summaryName
      * @param inDayCount  - number of days each input file represents
      * @param outDayCount  - number of days each output file represents
+     * @param CompositesContinueIntoNextYear
+     * @return
      * @throws NumberFormatException
      * @throws ClassNotFoundException
      * @throws SQLException
      * @throws FileNotFoundException
      */
     public static boolean findMissingSummaries(Connection con, final String rootDir, final String globalSchema, final String projectSchema, final String projectName, final LocalDate startDate,
-            final String summaryName, final Integer inDayCount, final Integer outDayCount) throws NumberFormatException, ClassNotFoundException, SQLException, FileNotFoundException {
+            final String summaryName, final Integer inDayCount, final Integer outDayCount, final Boolean CompositesContinueIntoNextYear) throws NumberFormatException, ClassNotFoundException, SQLException, FileNotFoundException {
         final String projectRoot;
         boolean summariesMissing = false;
 
@@ -101,10 +105,70 @@ public class UpdateForMissingSummaries {
 
         System.out.println("Checking for missing summaries..");
 
-        ArrayList<Integer> validDays = new ArrayList<Integer>();
-        for(int i=1; i < 366; i+=outDayCount){
-            validDays.add(i);
+        // If summary compositions continue into the next year if incomplete then calculate valid days from project start date. Otherwise, calculate valid days starting at day 1 for each year (e.g. MODIS).
+        HashMap<Integer, ArrayList<Integer>> validDays = new HashMap<Integer, ArrayList<Integer>>();
+        Statement stmt = con.createStatement();
+        LocalDate latest = Schemas.getLatestDateInIndicesCache(globalSchema, projectSchema, stmt);
+        stmt.close();
+
+        if(CompositesContinueIntoNextYear)
+        {
+            ArrayList<Integer> daysListTemp = new ArrayList<Integer>();
+            int currentYear = startDate.getYear();
+            for(LocalDate dt=startDate; dt.compareTo(latest) < 1; dt.plusDays(outDayCount))
+            {
+                if(dt.getYear() != currentYear)
+                {
+                    validDays.put(currentYear, daysListTemp);
+                    daysListTemp = new ArrayList<Integer>();
+                    currentYear = dt.getYear();
+                }
+
+                daysListTemp.add(dt.getDayOfYear());
+            }
         }
+        else
+        {
+            ArrayList<Integer> standardDays = new ArrayList<Integer>();
+            for(int d=1; d <= 365; d+=outDayCount){
+                standardDays.add(d);
+            }
+            ArrayList<Integer> leapYearDays = new ArrayList<Integer>();
+            for(int d=1; d <= 366; d+=outDayCount){
+                leapYearDays.add(d);
+            }
+
+            ArrayList<Integer> daysListTemp;
+            for(Integer yr=startDate.getYear(); yr <= latest.getYear(); yr++)
+            {
+                if(LocalDate.ofYearDay(yr, 1).isLeapYear())
+                {
+                    daysListTemp = (ArrayList<Integer>)leapYearDays.clone();
+                }
+                else
+                {
+                    daysListTemp = (ArrayList<Integer>)standardDays.clone();
+                }
+
+                if(yr == startDate.getYear())
+                {
+                    while((daysListTemp.size() > 0) && (daysListTemp.get(0) < startDate.getDayOfYear()))
+                    {
+                        daysListTemp.remove(0);
+                    }
+                }
+                else if(yr == latest.getYear())
+                {
+                    while((daysListTemp.size() > 0) && (daysListTemp.get(daysListTemp.size()-1) > latest.getDayOfYear()))
+                    {
+                        daysListTemp.remove(0);
+                    }
+                }
+
+                validDays.put(yr, daysListTemp);
+            }
+        }
+
         UpdateForMissingSummaries instance = new UpdateForMissingSummaries();
         MissingDates missingDates = instance.new MissingDates();
 
@@ -149,33 +213,43 @@ public class UpdateForMissingSummaries {
                     }
                 });
 
+                // Check if any year directories are missing.
+                for(Integer year : validDays.keySet())
+                {
+                    for(String yearStr : years)
+                    {
+                        if(yearStr.equals(yearStr))
+                        {
+                            break;
+                        }
+                    }
+
+                    // If execution reaches here then current year is missing
+                    String yearRoot = summaryRoot + year + "\\";
+                    for(Integer day : validDays.get(year))
+                    {
+                        missingDates.addDate(plugin, index, summaryName, year, day);
+                        fileOfMissingDatesContents.add(projectSchema + ", " + projectName + ", " + plugin + ", " + index + ", " + summaryName + ", " + year + ", " + day);
+                        System.out.println("Missing '" + yearRoot + String.format("%03d", day) + ".csv");
+                    }
+                }
+
+
+                // Check existing year directories for any day files that are missing.
                 for(String year : years)
                 {
                     String yearRoot = summaryRoot + year + "\\";
-                    String[] days = new File(yearRoot).list(new FilenameFilter(){
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return new File(dir, name).isFile();
-                        }
-                    });
+                    //                    String[] days = new File(yearRoot).list(new FilenameFilter(){
+                    //                        @Override
+                    //                        public boolean accept(File dir, String name) {
+                    //                            return new File(dir, name).isFile();
+                    //                        }
+                    //                    });
 
-                    for(Integer validDay : validDays)
+                    for(Integer validDay : validDays.get(Integer.parseInt(year)))
                     {
                         if(!new File(yearRoot + String.format("%03d", validDay) + ".csv").exists())
                         {
-                            if(year.equals("2016"))
-                            {
-                                Calendar cal = Calendar.getInstance();
-                                if(validDay > cal.get(Calendar.DAY_OF_YEAR)) {
-                                    break;
-                                }
-                            }
-
-                            if(validDay < startDate.getDayOfYear() && startDate.getYear() == Integer.parseInt(year))
-                            {
-                                continue;
-                            }
-
                             missingDates.addDate(plugin, index, summaryName, Integer.parseInt(year), validDay);
                             fileOfMissingDatesContents.add(projectSchema + ", " + projectName + ", " + plugin + ", " + index + ", " + summaryName + ", " + year + ", " + validDay);
                             System.out.println("Missing '" + yearRoot + String.format("%03d", validDay) + ".csv");
@@ -204,7 +278,7 @@ public class UpdateForMissingSummaries {
         //		executor.shutdown();
         //		executor.awaitTermination(10, TimeUnit.MINUTES);
 
-        Statement stmt = con.createStatement();
+        stmt = con.createStatement();
         ResultSet rs = null;
 
         ArrayList<Integer> dateGroupIDs;
@@ -315,7 +389,7 @@ public class UpdateForMissingSummaries {
 
         LocalDateTime temp = LocalDateTime.now();
         String timestamp = LocalDate.now().getYear() + "_" + LocalDate.now().getMonthValue() + "_" + LocalDate.now().getDayOfMonth() + "_" + String.format("%02d", temp.getHour())
-        + String.format("%02d", temp.getMinute()) + String.format("%02d", temp.getSecond());
+                + String.format("%02d", temp.getMinute()) + String.format("%02d", temp.getSecond());
 
         if(fileOfMissingDatesContents.size() > 1) {
             summariesMissing = false;

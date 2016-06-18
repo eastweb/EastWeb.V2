@@ -18,8 +18,8 @@ public class ExtraInfoData extends ProcessMetaData {
 
     private final NodeList nList;
 
-    protected ExtraInfoData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, ArrayList<String> ExtraDownloadFiles, NodeList n) {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, ExtraDownloadFiles);
+    protected ExtraInfoData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, NodeList n) {
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
         nList = n;
 
         Node extraInfo = nList.item(0);

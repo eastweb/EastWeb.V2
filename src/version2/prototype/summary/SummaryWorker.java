@@ -218,22 +218,34 @@ public class SummaryWorker extends ProcessWorker {
     public boolean verifyResults() {
 
         String url = "jdbc:postgresql://localhost:5432/" + configInstance.getDatabaseName();
-        Connection con;
+        Connection con = null;
+        boolean allGood = true;
         try {
             con = DriverManager.getConnection(url, configInstance.getDatabaseUsername(), configInstance.getDatabasePassword());
 
             for(ProjectInfoSummary summary: projectInfoFile.GetSummaries())
             {
-                return UpdateForMissingSummaries.findMissingSummaries(con, projectInfoFile.GetWorkingDir() + "\\projects", configInstance.getGlobalSchema(), Schemas.getSchemaName(projectInfoFile.GetProjectName(), pluginInfo.GetName()),
-                        projectInfoFile.GetProjectName(), projectInfoFile.GetStartDate(), "Summary " + summary.GetID(), pluginMetaData.DaysPerInputData, fileStores.get(summary.GetID()).compStrategy.maxNumberOfDaysInComposite());
+                if(!UpdateForMissingSummaries.findMissingSummaries(con, projectInfoFile.GetWorkingDir() + "\\projects", configInstance.getGlobalSchema(), Schemas.getSchemaName(projectInfoFile.GetProjectName(), pluginInfo.GetName()),
+                        projectInfoFile.GetProjectName(), projectInfoFile.GetStartDate(), "Summary " + summary.GetID(), pluginMetaData.DaysPerInputData, fileStores.get(summary.GetID()).compStrategy.maxNumberOfDaysInComposite(),
+                        pluginMetaData.CompositesContinueIntoNextYear)) {
+                    allGood = false;
+                }
             }
 
             con.close();
         } catch (SQLException|NumberFormatException|ClassNotFoundException|FileNotFoundException e) {
             ErrorLog.add(process, "Problem identifying missing summaries", e);
+
+            if(con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e1) {
+                    ErrorLog.add(process, "Problem closing connection", e);
+                }
+            }
         }
 
-        return true;
+        return allGood;
 
     }
 

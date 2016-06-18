@@ -21,8 +21,8 @@ public class ProcessorMetaData extends ProcessMetaData {
     public final Map<Integer, String> processStep;
     public final Integer numOfOutput;
 
-    public ProcessorMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, ArrayList<String> ExtraDownloadFiles, NodeList n){
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, ExtraDownloadFiles);
+    public ProcessorMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, NodeList n){
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
         nList = n;
         processStep = new HashMap<Integer, String>();
         Element processorNode = (Element) nList.item(0);
@@ -43,14 +43,15 @@ public class ProcessorMetaData extends ProcessMetaData {
      * @param QualityControlMetaData
      * @param DaysPerInputData
      * @param Resolution
+     * @param CompositesContinueIntoNextYear
      * @param ExtraDownloadFiles
      * @param processSteps
      * @param numOfOutput
      */
-    public ProcessorMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, ArrayList<String> ExtraDownloadFiles,
+    public ProcessorMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles,
             Map<Integer, String> processSteps, Integer numOfOutput)
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
         processStep = processSteps;
         this.numOfOutput = numOfOutput;
     }
