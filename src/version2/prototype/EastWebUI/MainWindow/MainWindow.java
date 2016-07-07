@@ -79,6 +79,8 @@ public class MainWindow {
     private JComboBox<String> projectList;
     private JCheckBox chckbxIntermidiateFiles;
 
+    private ArrayList<String> runningProjects;
+
     /**
      * Launch the application.
      */
@@ -120,13 +122,25 @@ public class MainWindow {
 
         frame = new JFrame();
         frame.setBounds(100, 100, 1175, 730);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
         frame.getContentPane().setLayout(null);
         frame.setResizable(false);
         frame.addWindowListener((new java.awt.event.WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent evt){ EASTWebManager.StopAndShutdown(); }
+            public void windowClosing(WindowEvent evt){
+                String ObjButtons[] = {"Yes","No"};
+                int PromptResult = JOptionPane.showOptionDialog(null,"Are you sure you would like to close all projects ?","EastWeb Application",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
+
+                if(PromptResult==JOptionPane.YES_OPTION)
+                {
+                    EASTWebManager.StopAndShutdown();
+                    frame.dispose();
+                }
+            }
         }));
+
+        runningProjects = new ArrayList<String>();
 
         FileMenu();
         PopulateUIControl();
@@ -390,6 +404,10 @@ public class MainWindow {
         for(ProjectInfoFile project : projects) {
             projectList.addItem(project.GetProjectName());
         }
+
+        for(String project: runningProjects){
+            projectList.removeItem(project);
+        }
     }
 
     // open manual
@@ -456,12 +474,14 @@ public class MainWindow {
         try {
             SchedulerData data = new SchedulerData(project, !chckbxIntermidiateFiles.isSelected());
             EASTWebManager.LoadNewScheduler(data, false);
+            runningProjects.add(String.valueOf(projectList.getSelectedItem()));
             defaultTableModel.addRow(new Object[] {
                     String.valueOf(projectList.getSelectedItem()),
                     chckbxIntermidiateFiles.isSelected(),
                     String.valueOf(projectList.getSelectedItem()),
                     String.valueOf(projectList.getSelectedItem()),
                     String.valueOf(projectList.getSelectedItem())});
+            populateProjectList();
         } catch (PatternSyntaxException | DOMException | ParserConfigurationException | SAXException | IOException e) {
             ErrorLog.add(Config.getInstance(), "MainWindow.FileMenu problem with creating new file from Desktop.", e);
         } catch (Exception e) {
@@ -715,6 +735,8 @@ public class MainWindow {
         private String label;
         private boolean isPushed;
         private int removeProject = -1;
+        private int PromptResult = -1;
+        String ObjButtons[] = {"Yes","No"};
 
         public DeleteButtonEditor(JCheckBox checkBox) {
             super(checkBox);
@@ -723,11 +745,18 @@ public class MainWindow {
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
+                    PromptResult = JOptionPane.showOptionDialog(null,"Are you sure you would like to delete this Project?","EastWeb Application",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
 
-                    if(removeProject > -1) {
-                        defaultTableModel.removeRow(removeProject);
-                        removeProject = -1;
+                    if(PromptResult==JOptionPane.YES_OPTION)
+                    {
+                        fireEditingStopped();
+
+                        if(removeProject > -1) {
+                            defaultTableModel.removeRow(removeProject);
+                            runningProjects.remove(removeProject);
+                            populateProjectList();
+                            removeProject = -1;
+                        }
                     }
                 }
             });
@@ -751,7 +780,7 @@ public class MainWindow {
 
         @Override
         public Object getCellEditorValue() {
-            if (isPushed) {
+            if (isPushed && PromptResult==JOptionPane.YES_OPTION) {
                 String projectName = label.toString();
                 ArrayList<SchedulerStatus> schedulersStatus = EASTWebManager.GetSchedulerStatuses();
 

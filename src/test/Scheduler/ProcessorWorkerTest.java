@@ -56,4 +56,10 @@ public final class ProcessorWorkerTest extends ProcessWorker {
         return null;
     }
 
+    @Override
+    public boolean verifyResults() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

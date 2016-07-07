@@ -163,6 +163,7 @@ public class EASTWebManager implements Runnable, EASTWebManagerI{
         System.out.println("Shutting down EASTWeb.");
 
         if(instance == null) {
+            System.out.println("Instance was null");
             return;
         }
 

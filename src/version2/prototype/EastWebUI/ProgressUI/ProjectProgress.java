@@ -44,7 +44,7 @@ public class ProjectProgress {
             public void run() {
                 try {
                     @SuppressWarnings("unused")
-                    ProjectProgress window = new ProjectProgress("blah");
+                    ProjectProgress window = new ProjectProgress("Test Progress window");
 
 
                 } catch (Exception e) {
@@ -94,6 +94,7 @@ public class ProjectProgress {
         lblDownloadProgress.setBounds(10, 25, 150, 25);
         panel.add(lblDownloadProgress);
         downloadProgressBar = new JProgressBar();
+        downloadProgressBar.setStringPainted(true);
         downloadProgressBar.setBounds(225, 25, 525, 25);
         panel.add(downloadProgressBar);
 
@@ -101,6 +102,7 @@ public class ProjectProgress {
         lblProcessProgress.setBounds(10, 55, 150, 25);
         panel.add(lblProcessProgress);
         processProgressBar = new JProgressBar();
+        processProgressBar.setStringPainted(true);
         processProgressBar.setBounds(225, 55, 525, 25);
         panel.add(processProgressBar);
 
@@ -108,6 +110,7 @@ public class ProjectProgress {
         lblIndiciesProgress.setBounds(10, 85, 150, 25);
         panel.add(lblIndiciesProgress);
         indiciesProgressBar = new JProgressBar();
+        indiciesProgressBar.setStringPainted(true);
         indiciesProgressBar.setBounds(225, 85, 525, 25);
         panel.add(indiciesProgressBar);
 
@@ -115,6 +118,7 @@ public class ProjectProgress {
         lblSummaryProgress.setBounds(10, 115, 150, 25);
         panel.add(lblSummaryProgress);
         summaryProgressBar = new JProgressBar();
+        summaryProgressBar.setStringPainted(true);
         summaryProgressBar.setBounds(225, 115, 525, 25);
         panel.add(summaryProgressBar);
     }
@@ -135,6 +139,24 @@ public class ProjectProgress {
         panel_1.add(scrollPane);
     }
 
+    class ProgressValue{
+        public int current;
+        public double total;
+
+        public ProgressValue(int current, double total){
+            this.current = current;
+            this.total = total;
+        }
+
+        public int PercentTotal(){
+            return (int)(current/total*100);
+        }
+
+        public String Description(){
+            return String.format("%d / %d",  current, (int)total);
+        }
+    }
+
     class GUIUpdateHandlerImplementation implements GUIUpdateHandler{
         private String projectName;
 
@@ -150,15 +172,34 @@ public class ProjectProgress {
 
                     if(status == null) {
                         downloadProgressBar.setValue(0);
+                        downloadProgressBar.setString("Error in Status");
+
                         processProgressBar.setValue(0);
+                        processProgressBar.setString("Error in Status");
+
                         indiciesProgressBar.setValue(0);
+                        indiciesProgressBar.setString("Error in Status");
+
                         summaryProgressBar.setValue(0);
+                        summaryProgressBar.setString("Error in Status");
+
                         itemLog.clear();
                     } else {
-                        downloadProgressBar.setValue(GetAverageDownload(status.GetDownloadProgressesByData()).intValue());   // Truncates the double (so value always equates to double rounded down)
-                        processProgressBar.setValue(GetAverage(status.GetProcessorProgresses()).intValue());
-                        indiciesProgressBar.setValue(GetAverage(status.GetIndicesProgresses()).intValue());
-                        summaryProgressBar.setValue(GetAverageSummary(status.GetSummaryProgresses()).intValue());
+                        ProgressValue downloadValue = GetAverageDownload(status.GetDownloadProgressesByData());
+                        downloadProgressBar.setValue(downloadValue.PercentTotal());   // Truncates the double (so value always equates to double rounded down)
+                        downloadProgressBar.setString(downloadValue.Description());
+
+                        ProgressValue processValue = GetAverage(status.GetProcessorProgresses());
+                        processProgressBar.setValue(processValue.PercentTotal());
+                        processProgressBar.setString(processValue.Description());
+
+                        ProgressValue indicesValue = GetAverage(status.GetIndicesProgresses());
+                        indiciesProgressBar.setValue(indicesValue.PercentTotal());
+                        indiciesProgressBar.setString(indicesValue.Description());
+
+                        ProgressValue summaryValue = GetAverageSummary(status.GetSummaryProgresses());
+                        summaryProgressBar.setValue(summaryValue.PercentTotal());
+                        summaryProgressBar.setString(summaryValue.Description());
 
                         itemLog.clear();
                         for(String log : status.ReadAllRemainingLogEntries())
@@ -194,7 +235,7 @@ public class ProjectProgress {
             }
         }
 
-        private Double GetAverage(TreeMap<String, Double> TotalProgress){
+        private ProgressValue GetAverage(TreeMap<String, Double> TotalProgress){
             double total = 0;
             Iterator<String> pluginIt = TotalProgress.keySet().iterator();
 
@@ -202,10 +243,10 @@ public class ProjectProgress {
                 total += TotalProgress.get(pluginIt.next());
             }
 
-            return total / TotalProgress.size();
+            return new ProgressValue(TotalProgress.size(), total);
         }
 
-        private Double GetAverageSummary(TreeMap<String, TreeMap<Integer, Double>> TotalProgress){
+        private ProgressValue GetAverageSummary(TreeMap<String, TreeMap<Integer, Double>> TotalProgress){
             double total = 0;
             int count = 0;
             Iterator<String> pluginIt = TotalProgress.keySet().iterator();
@@ -222,10 +263,10 @@ public class ProjectProgress {
                 }
             }
 
-            return total / count;
+            return new ProgressValue(count, total);
         }
 
-        private Double GetAverageDownload(TreeMap<String, TreeMap<String, Double>> TotalProgress){
+        private ProgressValue GetAverageDownload(TreeMap<String, TreeMap<String, Double>> TotalProgress){
             double total = 0;
             int count = 0;
             Iterator<String> pluginIt = TotalProgress.keySet().iterator();
@@ -240,7 +281,7 @@ public class ProjectProgress {
                 }
             }
 
-            return total / count;
+            return new ProgressValue(count, total);
         }
     }
 }
