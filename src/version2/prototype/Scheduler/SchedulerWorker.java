@@ -80,13 +80,11 @@ public class SchedulerWorker implements Callable<ProcessWorkerReturn> {
             summary = statusContainer.summaryProgresses.lastEntry().getValue().lastEntry().getValue();
 
 
-            // System.out.println(attemptUpdate);
-
             if(download >= 100 && processor >= 100 && indicies >= 100 && summary >= 100)
             {
                 if(worker.verifyResults() == false)
                 {
-                    //scheduler.AttemptUpdate();
+                    scheduler.AttemptUpdate();
                 }
             }
         }

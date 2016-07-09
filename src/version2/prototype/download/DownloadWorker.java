@@ -54,7 +54,7 @@ public class DownloadWorker extends ProcessWorker {
         } catch (ClassNotFoundException | SQLException | ParserConfigurationException | SAXException | IOException e) {
             ErrorLog.add(process, "LocalDownloader.AttemptUpdate error", e);
         } catch (Exception e) {
-            ErrorLog.add(process, "LocalDownloader.AttemptUpdate error", e);
+            ErrorLog.add(process, "Failed to connect. Check your network connection or please try again later.", e);
         }
         return null;
     }
