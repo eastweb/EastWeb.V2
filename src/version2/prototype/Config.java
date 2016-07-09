@@ -131,7 +131,7 @@ import version2.prototype.util.FileSystem;
             // Node(s): SummaryCalculation
             summaryCalculationsTemp = new ArrayList<String>(1);
             summaryList = ((Element) outputNode).getElementsByTagName(SUMMARY_CALCULATION_KEY);
-            summaryCalculationsTemp.add("Count");
+            //summaryCalculationsTemp.add("Count");
             for(int i=0; i < summaryList.getLength(); i++) {
                 summaryCalculationsTemp.add(summaryList.item(i).getTextContent());
             }

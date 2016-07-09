@@ -332,7 +332,7 @@ public class Schemas {
         LocalDate latest = null;
         String selectQuery = String.format("SELECT D.\"Year\", D.\"DayOfYear\" from \"%1$s\".\"IndicesCache\" I "
                 + "INNER JOIN \"%2$s\".\"DateGroup\" D ON I.\"DateGroupID\"=D.\"DateGroupID\" "
-                + "ORDER BY \"Year\" desc, \"DayOfyear\" desc;",
+                + "ORDER BY \"Year\" desc, \"DayOfYear\" desc;",
                 projectSchema,
                 globalEASTWebSchema
                 );
@@ -341,7 +341,7 @@ public class Schemas {
         {
             if(rs.next())
             {
-                latest = LocalDate.ofYearDay(rs.getInt("Year"), rs.getInt("DayOFYear"));
+                latest = LocalDate.ofYearDay(rs.getInt("Year"), rs.getInt("DayOfYear"));
             }
             rs.close();
         }
