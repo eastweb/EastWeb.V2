@@ -53,10 +53,10 @@ public class SchedulerStatusContainer {
 
     private final Config configInstance;
     private ProgressUpdater progressUpdater;
-    private TreeMap<String, TreeMap<String, Double>> downloadProgressesByData;
-    private TreeMap<String, Double> processorProgresses;
-    private TreeMap<String, Double> indicesProgresses;
-    private TreeMap<String, TreeMap<Integer, Double>> summaryProgresses;
+    protected TreeMap<String, TreeMap<String, Double>> downloadProgressesByData;
+    protected TreeMap<String, Double> processorProgresses;
+    protected TreeMap<String, Double> indicesProgresses;
+    protected TreeMap<String, TreeMap<Integer, Double>> summaryProgresses;
     private List<String> log;
     private TaskState state;
     private boolean projectUpToDate;

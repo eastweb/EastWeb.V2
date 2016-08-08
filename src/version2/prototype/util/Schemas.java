@@ -310,7 +310,7 @@ public class Schemas {
         return getID(selectQuery, "ProjectID", stmt);
     }
 
-    public static Integer getTemporalSummaryCompositionStrategyID(final String globalEASTWebSchema, String temporalSummaryCompositionStrategyClassName, final Statement stmt) throws SQLException {
+    public static Integer getTemporalSummaryCompositionStrategyID(final String globalEASTWebSchema, final String temporalSummaryCompositionStrategyClassName, final Statement stmt) throws SQLException {
         if(globalEASTWebSchema == null) {
             return null;
         }
@@ -325,6 +325,27 @@ public class Schemas {
                 globalEASTWebSchema
                 );
         return getID(selectQuery, "TemporalSummaryCompositionStrategyID", stmt);
+    }
+
+    public static LocalDate getLatestDateInIndicesCache(final String globalEASTWebSchema, final String projectSchema, Statement stmt) throws SQLException
+    {
+        LocalDate latest = null;
+        String selectQuery = String.format("SELECT D.\"Year\", D.\"DayOfYear\" from \"%1$s\".\"IndicesCache\" I "
+                + "INNER JOIN \"%2$s\".\"DateGroup\" D ON I.\"DateGroupID\"=D.\"DateGroupID\" "
+                + "ORDER BY \"Year\" desc, \"DayOfYear\" desc;",
+                projectSchema,
+                globalEASTWebSchema
+                );
+        ResultSet rs = stmt.executeQuery(selectQuery);
+        if(rs != null)
+        {
+            if(rs.next())
+            {
+                latest = LocalDate.ofYearDay(rs.getInt("Year"), rs.getInt("DayOfYear"));
+            }
+            rs.close();
+        }
+        return latest;
     }
 
     /**

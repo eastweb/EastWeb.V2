@@ -60,6 +60,8 @@ public abstract class ProcessWorker implements Callable<ProcessWorkerReturn> {
      */
     public abstract ProcessWorkerReturn process();
 
+    public abstract boolean verifyResults();
+
     public void setTaskState(TaskState state)
     {
         synchronized(tState) {

@@ -17,6 +17,7 @@ public class SchedulerWorker implements Callable<ProcessWorkerReturn> {
     private final SchedulerStatusContainer statusContainer;
     private final Scheduler scheduler;
 
+
     /**
      * Creates a SchedulerWorker that will run the given Callable once executed.
      * @param worker
@@ -45,6 +46,12 @@ public class SchedulerWorker implements Callable<ProcessWorkerReturn> {
 
     @Override
     public ProcessWorkerReturn call() throws Exception {
+
+        double download;
+        double processor;
+        double indicies;
+        double summary;
+
         ProcessWorkerReturn theReturn = null;
 
         synchronized(statusContainer) {
@@ -62,10 +69,28 @@ public class SchedulerWorker implements Callable<ProcessWorkerReturn> {
         worker.setTaskState(temp);
         Thread.currentThread().setName(oldThreadName + "-Updating-Scheduler-Status");
 
+
         synchronized(statusContainer) {
             statusContainer.SubtractActiveWorker(worker.process.processName);
             statusContainer.SubtractWorker(worker.process.processName);
+
+            download = statusContainer.downloadProgressesByData.lastEntry().getValue().lastEntry().getValue();
+            processor = statusContainer.processorProgresses.lastEntry().getValue();
+            indicies = statusContainer.indicesProgresses.lastEntry().getValue();
+            summary = statusContainer.summaryProgresses.lastEntry().getValue().lastEntry().getValue();
+
+
+            //            if(download >= 100 && processor >= 100 && indicies >= 100 && summary >= 100)
+            //            {
+            //                if(worker.verifyResults() == false)
+            //                {
+            //                    scheduler.AttemptUpdate();
+            //                }
+            //            }
         }
+
+
+
         scheduler.NotifyUI(new GeneralUIEventObject(this, null));
 
         Thread.currentThread().setName(oldThreadName);

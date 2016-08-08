@@ -666,7 +666,7 @@ public class DatabaseCache extends Observable{
      */
     public void UploadResultsToDb(Connection con, ArrayList<SummaryResult> newResults, int summaryIDNum, String indexNm, TemporalSummaryCompositionStrategy compStrategy, int year, int day,
             Process process, int daysPerInputData) throws IllegalArgumentException, UnsupportedOperationException, IOException, ClassNotFoundException, ParserConfigurationException, SAXException,
-            SQLException {
+    SQLException {
         if(newResults.size() == 0) {
             return;
         }
@@ -749,7 +749,6 @@ public class DatabaseCache extends Observable{
             //            conn.commit();
 
             stmt.execute("UPDATE \"" + mSchemaName + "\".\"ZonalStat\" SET \"TimeStamp\"=now() WHERE \"TimeStamp\" is null;");
-
             // Update progress bar
             scheduler.UpdateSummaryProgress(summaryIDNum, compStrategy, daysPerInputData, pluginInfo, stmt);
             if(compStrategy != null) {

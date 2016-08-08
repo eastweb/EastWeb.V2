@@ -36,7 +36,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "..\EastWeb.jar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\EastWeb.V2\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "postgresql-9.5.0-1-windows.exe"; DestDir: "{tmp}"
-Source: "jre-8u91-windows-i586.exe"; DestDir: "{tmp}"
+Source: "jre-8u65-windows-i586.exe"; DestDir: "{tmp}"
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -49,5 +49,5 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 
 [Run]
 Filename: "{tmp}\postgresql-9.5.0-1-windows.exe"; StatusMsg: Install PostgreSQL; 
-Filename: "{tmp}\jre-8u91-windows-i586.exe"; StatusMsg: Install JRE; 
+Filename: "{tmp}\jre-8u65-windows-i586.exe"; StatusMsg: Install JRE; 
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent

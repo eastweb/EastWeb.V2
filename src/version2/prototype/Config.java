@@ -18,7 +18,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import jdk.nashorn.internal.ir.annotations.Immutable;
-import version2.prototype.EastWebUI.DocumentBuilderInstance;
+import version2.prototype.EastWebUI_V2.DocumentBuilderInstance;
 import version2.prototype.util.FileSystem;
 
 //import version2.prototype.util.LazyCachedReference;

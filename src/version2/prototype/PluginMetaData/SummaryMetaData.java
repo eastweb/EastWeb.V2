@@ -19,8 +19,8 @@ public class SummaryMetaData extends ProcessMetaData {
 
     private NodeList nList;
 
-    public SummaryMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, ArrayList<String> ExtraDownloadFiles, NodeList n){
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, ExtraDownloadFiles);
+    public SummaryMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, NodeList n){
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
         nList = n;
         Node summaryNode = nList.item(0);
 
@@ -47,14 +47,15 @@ public class SummaryMetaData extends ProcessMetaData {
      * @param QualityControlMetaData
      * @param DaysPerInputData
      * @param Resolution
+     * @param CompositesContinueIntoNextYear
      * @param ExtraDownloadFiles
      * @param mergeStrategyClass
      * @param interpolateStrategyClass
      */
-    public SummaryMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, ArrayList<String> ExtraDownloadFiles,
+    public SummaryMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles,
             String mergeStrategyClass, String interpolateStrategyClass)
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
         this.mergeStrategyClass = mergeStrategyClass;
         this.interpolateStrategyClass = interpolateStrategyClass;
     }

@@ -12,8 +12,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 
 import version2.prototype.util.Schemas;
 
@@ -35,13 +36,13 @@ public class UpdateForMissingSummaries {
      * @throws InterruptedException
      */
     public static void main(String[] args) throws ClassNotFoundException, SQLException, FileNotFoundException, InterruptedException {
-        if(args.length < 6) {
+        if(args.length < 10) {
             System.out.print("UpdateForMissingSummaries");
             for(String arg : args) {
                 System.out.print(" " + arg);
             }
             System.out.println();
-            System.out.println("usage: UpdateForMissingSummaries.bat databaseName user password schema temporalSummaryLength inDayCount outDayCount");
+            System.out.println("usage: UpdateForMissingSummaries.bat databaseName user password schema plugin summary temporalSummaryLength inDayCount outDayCount");
             return;
         }
 
@@ -50,15 +51,21 @@ public class UpdateForMissingSummaries {
         final String password = args[2];
         final String schema = args[3];
         final String projectName = args[4];
-        final Integer inDayCount = Integer.parseInt(args[5]);
-        final Integer outDayCount = Integer.parseInt(args[6]);
+        final String start = args[5];
+        final String compStrategy = args[6];
+        final String summaryName = args[7];
+        final Integer inDayCount = Integer.parseInt(args[8]);
+        final Integer outDayCount = Integer.parseInt(args[9]);
 
         Class.forName("org.postgresql.Driver");
         String url = "jdbc:postgresql://localhost:5432/" + databaseName;
         Connection con = DriverManager.getConnection(url, user, password);
 
-        final String rootDir = "D:\\eastweb\\data\\Projects";
-        findMissingSummaries(con, rootDir, "EASTWeb", schema, projectName, inDayCount, outDayCount);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startDate = LocalDate.parse(start, dtf);
+
+        final String rootDir = "C:\\eastweb\\Projects";
+        findMissingSummaries(con, rootDir, "EASTWeb", schema, projectName, startDate, summaryName, inDayCount, outDayCount, compStrategy, true);
         con.close();
     }
 
@@ -68,16 +75,22 @@ public class UpdateForMissingSummaries {
      * @param globalSchema  - database schema name of the global schema (usually: "EASTWeb")
      * @param projectSchema  - database schema name of the project and plugin
      * @param projectName  - project name
+     * @param startDate
+     * @param summaryName
      * @param inDayCount  - number of days each input file represents
      * @param outDayCount  - number of days each output file represents
+     * @param CompositesContinueIntoNextYear
+     * @return
      * @throws NumberFormatException
      * @throws ClassNotFoundException
      * @throws SQLException
      * @throws FileNotFoundException
      */
-    public static void findMissingSummaries(Connection con, final String rootDir, final String globalSchema, final String projectSchema, final String projectName,
-            final Integer inDayCount, final Integer outDayCount) throws NumberFormatException, ClassNotFoundException, SQLException, FileNotFoundException {
+    public static boolean findMissingSummaries(Connection con, final String rootDir, final String globalSchema, final String projectSchema, final String projectName, final LocalDate startDate,
+            final String summaryName, final Integer inDayCount, final Integer outDayCount, final String compStrategy, final Boolean CompositesContinueIntoNextYear) throws NumberFormatException, ClassNotFoundException, SQLException, FileNotFoundException {
         final String projectRoot;
+        boolean summariesMissing = false;
+
         if(rootDir.endsWith("\\") || rootDir.endsWith("/")) {
             projectRoot = rootDir + projectName + "\\";
         } else {
@@ -92,10 +105,136 @@ public class UpdateForMissingSummaries {
 
         System.out.println("Checking for missing summaries..");
 
-        ArrayList<Integer> validDays = new ArrayList<Integer>();
-        for(int i=1; i < 366; i+=outDayCount){
-            validDays.add(i);
+        // If summary compositions continue into the next year if incomplete then calculate valid days from project start date. Otherwise, calculate valid days starting at day 1 for each year (e.g. MODIS).
+        HashMap<Integer, ArrayList<Integer>> validDays = new HashMap<Integer, ArrayList<Integer>>();
+        Statement stmt = con.createStatement();
+        LocalDate latest = Schemas.getLatestDateInIndicesCache(globalSchema, projectSchema, stmt);
+        stmt.close();
+
+        if(CompositesContinueIntoNextYear && (compStrategy.equals("WHOWeeklyStrategy") || compStrategy.equals("CDCWeeklyStrategy")))
+        {
+            LocalDate start = startDate;
+            if(compStrategy.equals("WHOWeeklyStrategy"))
+            {
+                if(startDate.getDayOfWeek().getValue() > 1)
+                {
+                    start = start.plusDays(8 - startDate.getDayOfWeek().getValue());
+                }
+
+            }
+            else if(compStrategy.equals("CDCWeeklyStrategy"))
+            {
+                if(startDate.getDayOfWeek().getValue() < 7)
+                {
+                    start = start.plusDays(7 - startDate.getDayOfWeek().getValue());
+                }
+
+            }
+
+            ArrayList<Integer> daysListTemp = new ArrayList<Integer>();
+            int currentYear = startDate.getYear();
+            for(LocalDate dt = start; dt.compareTo(latest) < 1; dt = dt.plusDays(outDayCount))
+            {
+                if(dt.getYear() != currentYear)
+                {
+                    validDays.put(currentYear, daysListTemp);
+                    daysListTemp = new ArrayList<Integer>();
+                    currentYear = dt.getYear();
+                }
+
+                if(!dt.plusDays(outDayCount).isAfter(latest))
+                {
+                    daysListTemp.add(dt.getDayOfYear());
+                }
+            }
+
+            validDays.put(currentYear, daysListTemp);
         }
+        else if(compStrategy.equals("GregorianMonthlyStrategy"))
+        {
+            ArrayList<Integer> daysListTemp = new ArrayList<Integer>();
+            int currentYear = startDate.getYear();
+            for(LocalDate dt = startDate; dt.compareTo(latest) < 1; dt = dt.plusDays(dt.lengthOfMonth()))
+            {
+                if(dt.getYear() != currentYear)
+                {
+                    validDays.put(currentYear, daysListTemp);
+                    daysListTemp = new ArrayList<Integer>();
+                    currentYear = dt.getYear();
+                }
+
+                if(!dt.plusDays(outDayCount).isAfter(latest))
+                {
+                    daysListTemp.add(dt.getDayOfYear());
+                }
+            }
+
+            validDays.put(currentYear, daysListTemp);
+        }
+        else
+        {
+            ArrayList<Integer> standardDays = new ArrayList<Integer>();
+            for(int d=1; d <= 365; d+=outDayCount){
+                standardDays.add(d);
+            }
+            ArrayList<Integer> leapYearDays = new ArrayList<Integer>();
+            for(int d=1; d <= 366; d+=outDayCount){
+                leapYearDays.add(d);
+            }
+
+            ArrayList<Integer> daysListTemp;
+            for(Integer yr=startDate.getYear(); yr <= latest.getYear(); yr++)
+            {
+                if(LocalDate.ofYearDay(yr, 1).isLeapYear())
+                {
+                    daysListTemp = (ArrayList<Integer>)leapYearDays.clone();
+                }
+                else
+                {
+                    daysListTemp = (ArrayList<Integer>)standardDays.clone();
+                }
+
+                if(yr == startDate.getYear() && yr == latest.getYear())
+                {
+                    while((daysListTemp.size() > 0) && (daysListTemp.get(0) < startDate.getDayOfYear()))
+                    {
+                        daysListTemp.remove(0);
+                    }
+
+                    while((daysListTemp.size() > 0) && (daysListTemp.get(daysListTemp.size()-1) > latest.getDayOfYear()))
+                    {
+                        daysListTemp.remove(daysListTemp.size()-1);
+                    }
+
+                    if(daysListTemp.get(daysListTemp.size()-1) + outDayCount > latest.getDayOfYear())
+                    {
+                        daysListTemp.remove(daysListTemp.size()-1);
+                    }
+                }
+                else if(yr == startDate.getYear())
+                {
+                    while((daysListTemp.size() > 0) && (daysListTemp.get(0) < startDate.getDayOfYear()))
+                    {
+                        daysListTemp.remove(0);
+                    }
+                }
+                else if(yr == latest.getYear())
+                {
+                    while((daysListTemp.size() > 0) && (daysListTemp.get(daysListTemp.size()-1) > latest.getDayOfYear()))
+                    {
+                        daysListTemp.remove(daysListTemp.size()-1);
+                    }
+                }
+
+                validDays.put(yr, daysListTemp);
+            }
+        }
+
+        if(validDays.isEmpty())
+        {
+            return true;
+        }
+
         UpdateForMissingSummaries instance = new UpdateForMissingSummaries();
         MissingDates missingDates = instance.new MissingDates();
 
@@ -104,7 +243,10 @@ public class UpdateForMissingSummaries {
         ArrayList<String> fileCurrentValuesContents = new ArrayList<String>();
         fileCurrentValuesContents.add("schema, project, plugin, Index, Summary, Year, Day, Retrieved, Processed");
 
-        for(String plugin : plugins)
+
+        /*System.out.println(validDays);*/
+
+        for (String plugin : plugins)
         {
             String outputRoot = projectRoot + plugin + "\\Summary\\Output\\";
             String[] indices = new File(outputRoot).list(new FilenameFilter(){
@@ -117,54 +259,84 @@ public class UpdateForMissingSummaries {
             for(String index : indices)
             {
                 String indexRoot = outputRoot + index + "\\";
-                String[] summaries = new File(indexRoot).list(new FilenameFilter(){
+
+                /* Summaries must be looped through outside of class because each summary will
+                 * have a different outDayCount and will cause incorrect missing dates to be
+                 * added and reported
+                 */
+
+                //            String[] summaries = new File(indexRoot).list(new FilenameFilter(){
+                //                @Override
+                //                public boolean accept(File dir, String name) {
+                //                    return new File(dir, name).isDirectory();
+                //                }
+                //            });
+
+                String summaryRoot = indexRoot + summaryName + "\\";
+                String[] years = new File(summaryRoot).list(new FilenameFilter(){
                     @Override
                     public boolean accept(File dir, String name) {
                         return new File(dir, name).isDirectory();
                     }
                 });
 
-                for(String summary : summaries)
+                // Check if any year directories are missing.
+                boolean missing = false;
+                for(Integer year : validDays.keySet())
                 {
-                    String summaryRoot = indexRoot + summary + "\\";
-                    String[] years = new File(summaryRoot).list(new FilenameFilter(){
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return new File(dir, name).isDirectory();
-                        }
-                    });
 
-                    for(String year : years)
+                    for(String yearStr : years)
                     {
-                        String yearRoot = summaryRoot + year + "\\";
-                        String[] days = new File(yearRoot).list(new FilenameFilter(){
-                            @Override
-                            public boolean accept(File dir, String name) {
-                                return new File(dir, name).isFile();
-                            }
-                        });
-
-                        for(Integer validDay : validDays)
+                        if(yearStr.equals(year.toString()))
                         {
-                            if(!new File(yearRoot + String.format("%03d", validDay) + ".csv").exists())
-                            {
-                                if(year.equals("2016"))
-                                {
-                                    Calendar cal = Calendar.getInstance();
-                                    if(validDay > cal.get(Calendar.DAY_OF_YEAR)) {
-                                        break;
-                                    }
-                                }
-                                missingDates.addDate(plugin, index, summary, Integer.parseInt(year), validDay);
-                                fileOfMissingDatesContents.add(projectSchema + ", " + projectName + ", " + plugin + ", " + index + ", " + summary + ", " + year + ", " + validDay);
-                                System.out.println("Missing '" + yearRoot + String.format("%03d", validDay) + ".csv");
-                            }
+                            missing = false;
+                            break;
+                        }
+
+                        missing = true;
+                    }
+
+                    if(missing)
+                    {
+                        System.out.println("Current Year Missing...");
+                        // If execution reaches here then current year is missing
+                        String yearRoot = summaryRoot + year + "\\";
+                        for(Integer day : validDays.get(year))
+                        {
+                            missingDates.addDate(plugin, index, summaryName, year, day);
+                            fileOfMissingDatesContents.add(projectSchema + ", " + projectName + ", " + plugin + ", " + index + ", " + summaryName + ", " + year + ", " + day);
+                            System.out.println("Missing '" + yearRoot + String.format("%03d", day) + ".csv");
+                        }
+                    }
+
+
+                }
+
+                // Check existing year directories for any day files that are missing.
+                for(String year : years)
+                {
+                    String yearRoot = summaryRoot + year + "\\";
+                    //                    String[] days = new File(yearRoot).list(new FilenameFilter(){
+                    //                        @Override
+                    //                        public boolean accept(File dir, String name) {
+                    //                            return new File(dir, name).isFile();
+                    //                        }
+                    //                    });
+
+                    for(Integer validDay : validDays.get(Integer.parseInt(year)))
+                    {
+                        if(!new File(yearRoot + String.format("%03d", validDay) + ".csv").exists())
+                        {
+                            missingDates.addDate(plugin, index, summaryName, Integer.parseInt(year), validDay);
+                            fileOfMissingDatesContents.add(projectSchema + ", " + projectName + ", " + plugin + ", " + index + ", " + summaryName + ", " + year + ", " + validDay);
+                            System.out.println("Missing '" + yearRoot + String.format("%03d", validDay) + ".csv");
                         }
                     }
                 }
-            }
-        }
 
+            }
+
+        }
         //		ThreadPoolExecutor executor = new ThreadPoolExecutor(24,24,0,TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
         //		executor.allowCoreThreadTimeOut(true);
         //
@@ -183,7 +355,7 @@ public class UpdateForMissingSummaries {
         //		executor.shutdown();
         //		executor.awaitTermination(10, TimeUnit.MINUTES);
 
-        Statement stmt = con.createStatement();
+        stmt = con.createStatement();
         ResultSet rs = null;
 
         ArrayList<Integer> dateGroupIDs;
@@ -202,7 +374,7 @@ public class UpdateForMissingSummaries {
                 }
                 stmt.close();
                 con.close();
-                return;
+                return false;
             }
 
             // Get DateGroupIDs
@@ -226,6 +398,7 @@ public class UpdateForMissingSummaries {
 
             // If no DateGroupIDs retrieved then assume no problems to correct for this date and skip to next
             if(dateGroupIDs.size() == 0) {
+                summariesMissing = true;
                 continue;
             }
 
@@ -233,14 +406,14 @@ public class UpdateForMissingSummaries {
             Integer projectSummaryID = Schemas.getProjectSummaryID(globalSchema, projectName, aDate.summaryIDNum, stmt);
 
             // Make sure there are no rows for the current dates in the ZonalStat table
-            query = new StringBuilder("delete from \"" + projectSchema + "\".\"ZonalStat\" where \"ProjectSummaryID\"=" + projectSummaryID + " and \"IndexID\"=" + indexID
+            query = new StringBuilder("delete from " + projectSchema + ".\"ZonalStat\" where \"ProjectSummaryID\"=" + projectSummaryID + " and \"IndexID\"=" + indexID
                     + " and (\"DateGroupID\"=" + dateGroupIDs.get(0));
             for(int i=1; i < dateGroupIDs.size(); i++)
             {
                 query.append(" or \"DateGroupID\"="+dateGroupIDs.get(i));
             }
             query.append(")");
-            stmt.executeQuery(query.toString());
+            stmt.executeUpdate(query.toString());
 
             // Get current values in IndicesCache table
             query = new StringBuilder("select \"Retrieved\", \"Processed\" from \"" + projectSchema + "\".\"IndicesCache\" "
@@ -296,6 +469,7 @@ public class UpdateForMissingSummaries {
         + String.format("%02d", temp.getMinute()) + String.format("%02d", temp.getSecond());
 
         if(fileOfMissingDatesContents.size() > 1) {
+            summariesMissing = false;
             File f = new File(projectRoot + projectName + "_MissingFilesZonalStat_" + timestamp + ".csv");
             if(f.exists()) { f.delete(); }
             FileOutputStream fos = new FileOutputStream(f);
@@ -319,6 +493,7 @@ public class UpdateForMissingSummaries {
         }
 
         System.out.println("Finished checking for missing summaries..");
+        return summariesMissing;
     }
 
     public class MissingDates

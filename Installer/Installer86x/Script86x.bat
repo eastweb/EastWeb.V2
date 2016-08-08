@@ -1,6 +1,7 @@
 @echo off
 
 rem delete old output and project
+@RD /S /Q "%~dp0..\Installer64x\Output"
 @RD /S /Q "%~dp0..\Installer86x\Output"
 pause
 
@@ -23,7 +24,6 @@ del "%~dp0..\EastWeb.V2\projects\*.*"
 
 @RD /S /Q "%~dp0..\EastWeb.V2\lib"
 @RD /S /Q "%~dp0..\EastWeb.V2\sources"
-@RD /S /Q "%~dp0..\EastWeb.V2\src"
 pause
 
 rem compile installer 
