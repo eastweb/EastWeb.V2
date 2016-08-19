@@ -99,7 +99,10 @@ public class ModisDownloader extends DownloaderFramework
                         String.format("%04d.%02d.%02d/%s",
                                 mDate.getYear(), mDate.getMonth(), mDate.getDay(),mFileToD);
 
-                DownloadUtils.downloadToFile(new URL(fileURL), outputFile);
+                //DownloadUtils.downloadToFile(new URL(fileURL), outputFile);
+
+                //FIXIT:  add uname and password in the project XML file and retrieve there from there
+                DownloadUtils.downloadWithCred(new URL(fileURL), outputFile, "EASTWeb", "Framew0rk!", 5);
             }
             catch (IOException e)
             {

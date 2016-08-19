@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -104,5 +107,65 @@ public final class DownloadUtils {
         downloadToStream(conn, outStream);
 
         return outStream.toByteArray();
+    }
+
+    /*
+     * added for http site that requires authorization on August 18th
+     * @url:  url link
+     * @localFile: destination file to save the download content
+     * @un:  username
+     * @pws: password
+     * @maxNumRedirect:  maximum number of the redirects allowed
+     */
+    public static void downloadWithCred(URL url, File localFile, String un, String pw, int maxNumRedirect) throws IOException
+    {
+        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        int code;
+        int maxd = maxNumRedirect;   //maximum redirection
+        URL u = url;
+        String encoding = new sun.misc.BASE64Encoder().encode (new String(un+ ":"+pw).getBytes());
+
+        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        // FIXIT: add CookieJar to store cookies
+
+        HttpURLConnection con;
+
+        do
+        {
+            con = (HttpURLConnection)u.openConnection();
+
+            // System.out.println("here" + u.toString());
+            con.setRequestProperty("Authorization", "basic " + encoding);
+            con.setInstanceFollowRedirects(true);
+            con.setUseCaches(true);
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            code = con.getResponseCode();
+
+            // handle redirects
+            if (code>=300 && code<400) {
+                u = new URL(con.getHeaderField("Location"));
+            }
+            maxd --;
+        }while ((code>=300 && code<400)&&(maxd > 0));
+
+        if (code == 200) // download
+        {
+            final BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(localFile));
+            final BufferedInputStream inStream = new BufferedInputStream(con.getInputStream());
+
+            try {
+                final byte[] buffer = new byte[4096];
+                int numBytesRead;
+                while ((numBytesRead = inStream.read(buffer)) > 0) {
+                    outStream.write(buffer, 0, numBytesRead);
+                }
+            } finally {
+                inStream.close();
+            }
+        } else {
+            throw new IOException("HTTP request returned code " + code);
+        }
+
     }
 }
