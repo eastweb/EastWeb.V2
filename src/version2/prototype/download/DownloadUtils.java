@@ -117,56 +117,58 @@ public final class DownloadUtils {
      * @pws: password
      * @maxNumRedirect:  maximum number of the redirects allowed
      */
+    @SuppressWarnings("resource")
     public static void downloadWithCred(URL url, File localFile, String un, String pw, int maxNumRedirect) throws IOException
     {
         CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        int code;
-        int maxd = maxNumRedirect;   //maximum redirection
         URL u = url;
+        int maxd = maxNumRedirect;   //maximum redirection
+
         String encoding = new sun.misc.BASE64Encoder().encode (new String(un+ ":"+pw).getBytes());
 
-        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        // FIXIT: add CookieJar to store cookies
+        HttpURLConnection con = (HttpURLConnection) u.openConnection();
+        con.setRequestProperty("Authorization", "basic " + encoding);
+        con.setInstanceFollowRedirects(false);
+        int code = con.getResponseCode();
 
-        HttpURLConnection con;
+        //System.out.println(code);
 
-        do
+        while ((code >= 300) && (code<400) && (maxd >0)) //redirect
         {
-            con = (HttpURLConnection)u.openConnection();
-
-            // System.out.println("here" + u.toString());
+            u = new URL(con.getHeaderField("Location"));
+            con = (HttpURLConnection) u.openConnection();
             con.setRequestProperty("Authorization", "basic " + encoding);
-            con.setInstanceFollowRedirects(true);
+            con.setInstanceFollowRedirects(false);
             con.setUseCaches(true);
             con.setDoInput(true);
             con.setDoOutput(true);
             code = con.getResponseCode();
-
-            // handle redirects
-            if (code>=300 && code<400) {
-                u = new URL(con.getHeaderField("Location"));
-            }
+            //System.out.println(code);
             maxd --;
-        }while ((code>=300 && code<400)&&(maxd > 0));
+        }
 
-        if (code == 200) // download
+        if (code == 200)
         {
-            final BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(localFile));
-            final BufferedInputStream inStream = new BufferedInputStream(con.getInputStream());
+            final BufferedInputStream inS = new BufferedInputStream(con.getInputStream());
+            File file = localFile;
+            if(!file.exists())
+            {
+                file.createNewFile();
+            }
 
+            FileOutputStream fout = new FileOutputStream(file);
             try {
                 final byte[] buffer = new byte[4096];
                 int numBytesRead;
-                while ((numBytesRead = inStream.read(buffer)) > 0) {
-                    outStream.write(buffer, 0, numBytesRead);
+                while ((numBytesRead = inS.read(buffer)) > 0) {
+                    fout.write(buffer, 0, numBytesRead);
                 }
             } finally {
-                inStream.close();
+                inS.close();
             }
-        } else {
+        }else {
             throw new IOException("HTTP request returned code " + code);
         }
-
     }
 
 }
