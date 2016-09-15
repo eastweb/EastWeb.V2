@@ -15,6 +15,7 @@
 			<UserName>anonymous</UserName>
 			<PassWord>anonymous</PassWord>
 		</FTP>
+		<Credentials>false</Credentials>
 		<TimeZone>CST6CDT</TimeZone>
 		<FilesPerDay>24</FilesPerDay>
 		<DatePattern>\d{4}</DatePattern>

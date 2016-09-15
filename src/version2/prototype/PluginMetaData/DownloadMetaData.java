@@ -27,6 +27,7 @@ public class DownloadMetaData extends ProcessMetaData {
     public final String mode;   // the protocol type: ftp or http
     public final FTP myFtp;
     public final HTTP myHttp;
+    public final boolean cred;  // credentials; true for needing credentials
     public final String downloadFactoryClassName;
     public final String timeZone;
     public final int filesPerDay;
@@ -43,6 +44,7 @@ public class DownloadMetaData extends ProcessMetaData {
         String tempMode = null;
         FTP tempFtp = null;
         HTTP tempHttp = null;
+        boolean tempCred = false;
         String tempDownloadFactoryClassName = null;
         String tempTimeZone = null;
         int tempFilesPerDay = -1;
@@ -94,6 +96,7 @@ public class DownloadMetaData extends ProcessMetaData {
 
         // Set properties
         Element dataElement = (Element) dataNode;
+        tempCred = Boolean.parseBoolean(dataElement.getElementsByTagName("Credentials").item(0).getTextContent());
         tempTimeZone = dataElement.getElementsByTagName("TimeZone").item(0).getTextContent();
         tempDownloadFactoryClassName = dataElement.getElementsByTagName("DownloadFactoryClassName").item(0).getTextContent();
         tempMode = dataElement.getElementsByTagName("Mode").item(0).getTextContent();
@@ -112,6 +115,7 @@ public class DownloadMetaData extends ProcessMetaData {
         mode = tempMode;
         myFtp = tempFtp;
         myHttp = tempHttp;
+        cred = tempCred;
         downloadFactoryClassName = tempDownloadFactoryClassName;
         timeZone = tempTimeZone;
         filesPerDay = tempFilesPerDay;
@@ -160,13 +164,14 @@ public class DownloadMetaData extends ProcessMetaData {
      * @throws PatternSyntaxException
      */
     public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, String mode, FTP myFtp, HTTP myHttp,
-            String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, LocalDate originDate) throws PatternSyntaxException
+            boolean myCred, String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, LocalDate originDate) throws PatternSyntaxException
     {
         super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
         name = "data";
         this.mode = mode;
         this.myFtp = myFtp;
         this.myHttp = myHttp;
+        cred = myCred;
         this.downloadFactoryClassName = downloadFactoryClassName;
         this.timeZone = timeZone;
         this.filesPerDay = filesPerDay;
@@ -196,6 +201,7 @@ public class DownloadMetaData extends ProcessMetaData {
      * @param mode
      * @param myFtp
      * @param myHttp
+     * @param myCred
      * @param downloadFactoryClassName
      * @param timeZone
      * @param filesPerDay
@@ -206,7 +212,7 @@ public class DownloadMetaData extends ProcessMetaData {
      * @throws PatternSyntaxException
      */
     public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, String mode, FTP myFtp, HTTP myHttp,
-            String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, ArrayList<DownloadMetaData> extraDownloads, LocalDate originDate)
+            boolean myCred, String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, ArrayList<DownloadMetaData> extraDownloads, LocalDate originDate)
                     throws PatternSyntaxException
     {
         super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
@@ -214,6 +220,7 @@ public class DownloadMetaData extends ProcessMetaData {
         this.mode = mode;
         this.myFtp = myFtp;
         this.myHttp = myHttp;
+        cred = myCred;
         this.downloadFactoryClassName = downloadFactoryClassName;
         this.timeZone = timeZone;
         this.filesPerDay = filesPerDay;
@@ -252,13 +259,14 @@ public class DownloadMetaData extends ProcessMetaData {
      * @throws PatternSyntaxException
      */
     public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, String name, String mode, FTP myFtp,
-            HTTP myHttp, String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, LocalDate originDate) throws PatternSyntaxException
+            HTTP myHttp, boolean myCred, String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, LocalDate originDate) throws PatternSyntaxException
     {
         super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
         this.name = name.toLowerCase();
         this.mode = mode;
         this.myFtp = myFtp;
         this.myHttp = myHttp;
+        cred = myCred;
         this.downloadFactoryClassName = downloadFactoryClassName;
         this.timeZone = timeZone;
         this.filesPerDay = filesPerDay;
@@ -283,6 +291,7 @@ public class DownloadMetaData extends ProcessMetaData {
         String tempMode = null;
         FTP tempFtp = null;
         HTTP tempHttp = null;
+        boolean tempCred = false;
         String tempDownloadFactoryClassName = null;
         String tempTimeZone = null;
         int tempFilesPerDay = -1;
@@ -296,6 +305,10 @@ public class DownloadMetaData extends ProcessMetaData {
             name = FileSystem.StandardizeName(((Element) extraDownloadNode).getAttribute("Name")).toLowerCase();
         } else {
             throw new DOMException((short) 0, "A Download element is missing the attribute \"Name\".");
+        }
+
+        if(((Element) extraDownloadNode).getElementsByTagName("Credentials").getLength() > 0) {
+            tempCred = Boolean.parseBoolean(((Element) extraDownloadNode).getElementsByTagName("Credentials").item(0).getTextContent());
         }
 
         if(((Element) extraDownloadNode).getElementsByTagName("TimeZone").getLength() > 0) {
@@ -324,6 +337,7 @@ public class DownloadMetaData extends ProcessMetaData {
         mode = tempMode;
         myFtp = tempFtp;
         myHttp = tempHttp;
+        cred = tempCred;
         downloadFactoryClassName = tempDownloadFactoryClassName;
         timeZone = tempTimeZone;
         filesPerDay = tempFilesPerDay;

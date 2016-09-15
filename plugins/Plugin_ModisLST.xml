@@ -12,6 +12,7 @@
 		<HTTP>
 			<URL>http://e4ftl01.cr.usgs.gov/MOLT/MOD11A2.005/</URL>
 		</HTTP>
+		<Credentials>true</Credentials>
 		<TimeZone>CST6CDT</TimeZone>
 		<!-- <FilesPerDay>322</FilesPerDay> -->
 		<FilesPerDay>317</FilesPerDay>
