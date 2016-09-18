@@ -1,4 +1,4 @@
-package version2.prototype.processor.IMERG;
+package version2.prototype.processor.IMERG_RT;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -17,12 +17,13 @@ import version2.prototype.ErrorLog;
 import version2.prototype.processor.Convert;
 import version2.prototype.processor.ProcessData;
 import version2.prototype.util.GdalUtils;
+import version2.prototype.util.UnGunZip;
 
-public class IMERGConvert
+public class IMERG_RTConvert
 {
     private String myfile;
 
-    public IMERGConvert(String filename)
+    public IMERG_RTConvert(String filename)
     {
         myfile = filename;
     }
@@ -36,6 +37,14 @@ public class IMERGConvert
             Dataset inputDS = null;
             //String fName = mInput.getAbsolutePath();
             System.out.println(myfile);
+
+            if (FilenameUtils.getExtension(myfile).equalsIgnoreCase("gz"))
+            {
+                String orgfile = myfile;
+                myfile = orgfile.substring(0, orgfile. lastIndexOf('.'));
+                UnGunZip gz = new UnGunZip(orgfile, myfile);
+            }
+
             inputDS = gdal.Open(myfile);
 
             double [] gTrans = inputDS.GetGeoTransform();
@@ -63,7 +72,7 @@ public class IMERGConvert
             }
 
             //File outputFile = new File(outputFolder + "\\Band" + dataBands[i] + ".tif");
-            File outputFile = new File("c:\\test\\IMERG\\output.tif");
+            File outputFile = new File("c:\\test\\IMERG_RT\\output.tif");
             try {
                 outputFile.createNewFile();
             } catch (IOException e) {
