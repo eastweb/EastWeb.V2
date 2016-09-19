@@ -1,8 +1,10 @@
-package version2.prototype.download.IMERG;
+package version2.prototype.download.IMERG_RT;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -18,9 +20,9 @@ import version2.prototype.ProjectInfoMetaData.ProjectInfoFile;
 import version2.prototype.download.ConnectionContext;
 import version2.prototype.download.ListDatesFiles;
 
-public class IMERGListDatesFiles extends ListDatesFiles{
+public class IMERG_RTListDatesFiles extends ListDatesFiles{
 
-    public IMERGListDatesFiles(DataDate date, DownloadMetaData data, ProjectInfoFile project) throws IOException
+    public IMERG_RTListDatesFiles(DataDate date, DownloadMetaData data, ProjectInfoFile project) throws IOException
     {
         super(date, data, project);
     }
@@ -54,6 +56,7 @@ public class IMERGListDatesFiles extends ListDatesFiles{
         }
 
         String mRoot = mData.myFtp.rootDir;
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         try
         {
             if (!ftpC.changeWorkingDirectory(mRoot))
@@ -75,17 +78,28 @@ public class IMERGListDatesFiles extends ListDatesFiles{
                 }
 
                 int year = Integer.parseInt(yearFile.getName());
+
+                System.out.println(sDate.getYear());
                 if (year < sDate.getYear()) {
                     continue;
                 }
 
-                // List days in this year
-                String yearDir =
-                        String.format("%s/%s", mRoot, yearFile.getName());
+                /* if it is the current year,
+                the files for download are stored in the folder in month (01-12)
+                under the directory without year folder
+                 if (year < currentYear) -  go for the folder of yyyy/mm
+                 */
+                String newDir = mRoot;
+                if (year < currentYear)
+                {
+                    // add year folder
+                    newDir =
+                            String.format("%s/%s", mRoot, yearFile.getName());
 
-                if (!ftpC.changeWorkingDirectory(yearDir)) {
-                    throw new IOException(
-                            "Couldn't navigate to directory: " + yearDir);
+                    if (!ftpC.changeWorkingDirectory(newDir)) {
+                        throw new IOException(
+                                "Couldn't navigate to directory: " + newDir);
+                    }
                 }
 
                 for(FTPFile monthFile : ftpC.listFiles())
@@ -95,8 +109,9 @@ public class IMERGListDatesFiles extends ListDatesFiles{
                         continue;
                     }
 
+                    System.out.println(monthFile.getName());
                     String monthDir =
-                            String.format("%s/%s", yearDir, monthFile.getName());
+                            String.format("%s/%s", newDir, monthFile.getName());
 
                     if (!ftpC.changeWorkingDirectory(monthDir)) {
                         throw new IOException(
@@ -110,15 +125,6 @@ public class IMERGListDatesFiles extends ListDatesFiles{
                             continue;
                         }
 
-                        String dayDir =
-                                String.format("%s/%s/%s/gis", yearDir, monthFile.getName(), dayFile.getName());
-
-                        System.out.println(dayDir);
-                        if (!ftpC.changeWorkingDirectory(dayDir)) {
-                            throw new IOException(
-                                    "Couldn't navigate to directory: " + dayDir);
-                        }
-
                         ArrayList<String> fileNames = new ArrayList<String>();
 
                         for (FTPFile file : ftpC.listFiles())
@@ -127,6 +133,7 @@ public class IMERGListDatesFiles extends ListDatesFiles{
                                 break outerLoop;
                             }
 
+                            // files of all the days in a month are stored under the month folder
                             /*if (mData.fileNamePattern.matcher(file.getName()).matches())
                             {
                                 System.out.println(file.getName());
@@ -134,15 +141,16 @@ public class IMERGListDatesFiles extends ListDatesFiles{
                             if (file.isFile() &&
                                     mData.fileNamePattern.matcher(file.getName()).matches())
                             {
-                                /* pattern of IMERG
-                                 * 3B-DAY-GIS\.MS\.MRG\.3IMERG\.(\d{4}\d{2}\d{2})-S000000-E235959\.(\d{4})\.V03D\.tif
+                                /* pattern of IMERG_RT
+                                 * 3B-HHR-L\.MS\.MRG\.3IMERG\.(\d{4}\d{2}\d{2})-S233000-E235959\.1410\.V03E\.1day\.tif((\.gz){0,1})
                                  */
 
                                 fileNames.add(file.getName());
 
                                 String[] str = file.getName().split("[.]");
-                                final int month = Integer.parseInt(str[4].substring(5, 7));
-                                final int day = Integer.parseInt(str[4].substring(7, 9));
+
+                                final int month = Integer.parseInt(str[4].substring(4, 6));
+                                final int day = Integer.parseInt(str[4].substring(6, 8));
                                 // always get the last hour of the day -  23
                                 DataDate dataDate = new DataDate(23, day, month, year);
                                 if (dataDate.compareTo(sDate) >= 0)
@@ -162,7 +170,7 @@ public class IMERGListDatesFiles extends ListDatesFiles{
         }
         catch (Exception e)
         {
-            ErrorLog.add(Config.getInstance(), "IMERG", mData.name, "IMERGListDatesFiles.ListDatesFilesFTP problem while creating list using FTP.", e);
+            ErrorLog.add(Config.getInstance(), "IMERG_RT", mData.name, "IMERG_RTListDatesFiles.ListDatesFilesFTP problem while creating list using FTP.", e);
             return null;
         }
 

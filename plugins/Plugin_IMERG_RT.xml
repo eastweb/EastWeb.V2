@@ -1,39 +1,41 @@
 <?xml version="1.0" ?>
 <PluginMetadata>
-	<Title>IMERG</Title>
+	<Title>IMERG_RT</Title>
 	<DaysPerInputData>1</DaysPerInputData>
 	<NoDataValue>9999</NoDataValue>
 	<Resolution>10000</Resolution>
 	<CompositesContinueIntoNextYear>TRUE</CompositesContinueIntoNextYear>
 	<ExtraDownloadFiles/>
 	<Download>
-		<DownloadFactoryClassName>IMERGFactory</DownloadFactoryClassName>
+		<DownloadFactoryClassName>IMERG_RTFactory</DownloadFactoryClassName>
 		<Mode>ftp</Mode>
 		<FTP>
-			<HostName>arthurhou.pps.eosdis.nasa.gov</HostName>
-			<RootDir>/gpmdata</RootDir>
+			<HostName>jsimpson.pps.eosdis.nasa.gov</HostName>
+			<RootDir>/data/imerg/gis</RootDir>
 			<UserName>eastweb.system@gmail.com</UserName>
 			<PassWord>eastweb.system@gmail.com</PassWord>
 		</FTP>
 		<TimeZone>CST6CDT</TimeZone>
 		<FilesPerDay>1</FilesPerDay>
 		<DatePattern>\d{4}</DatePattern>
-		<FileNamePattern>3B-DAY-GIS\.MS\.MRG\.3IMERG\.(\d{4}\d{2}\d{2})-S000000-E235959\.(\d{4})\.V03D\.tif</FileNamePattern>
+		<FileNamePattern>
+		    3B-HHR-L\.MS\.MRG\.3IMERG\.(\d{4}\d{2}\d{2})-S233000-E235959\.1410\.V03E\.1day\.tif((\.gz){0,1})
+		</FileNamePattern>
 		<OriginDate>
-			<DayOfMonth>01</DayOfMonth>
-			<Month>June</Month>
-			<Year>2014</Year>
+			<DayOfMonth>07</DayOfMonth>
+			<Month>March</Month>
+			<Year>2015</Year>
 		</OriginDate>
 	</Download>	
 	<Processor>
-		<ProcessStep>IMERGConvert</ProcessStep>
-		<ProcessStep>IMERGReproject</ProcessStep>
-		<ProcessStep>IMERGClip</ProcessStep>
-		<ProcessStep>IMERGMask</ProcessStep>
+		<ProcessStep>IMERG_RTConvert</ProcessStep>
+		<ProcessStep>IMERG_RTReproject</ProcessStep>
+		<ProcessStep>IMERG_RTClip</ProcessStep>
+		<ProcessStep>IMERG_RTMask</ProcessStep>
 		<NumberOfOutput>1</NumberOfOutput>
 	</Processor>
 	<Indices>
-		<ClassName>IMERGIndex</ClassName>
+		<ClassName>IMERG_RTIndex</ClassName>
 	</Indices>
 	<Summary>
 		<Temporal>
