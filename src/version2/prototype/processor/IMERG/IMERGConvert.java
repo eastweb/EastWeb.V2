@@ -38,9 +38,6 @@ public class IMERGConvert
             System.out.println(myfile);
             inputDS = gdal.Open(myfile);
 
-            double [] gTrans = inputDS.GetGeoTransform();
-            Hashtable<?, ?>  mData = inputDS.GetMetadata_Dict();
-
             Band b = inputDS.GetRasterBand(1);
 
             int xSize = b.getXSize();
@@ -76,9 +73,15 @@ public class IMERGConvert
                     1,
                     gdalconstConstants.GDT_Float32);
 
-            outputDS.SetGeoTransform(gTrans);
+            outputDS.SetGeoTransform(new double[] {
+                    -179.9499969,
+                    0.1000000,
+                    0.0000000,
+                    89.9499969,
+                    0.0000000,
+                    -0.1,
+            });
             outputDS.SetProjection("GEOGCS[\"GCS_GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"'Greenwich'\",0.0],UNIT[\"Degree'\",0.0174532925199433]]");
-            outputDS.SetMetadata(mData);
 
             outputDS.GetRasterBand(1).WriteRaster(0, 0, xSize, ySize, outArray);
 
