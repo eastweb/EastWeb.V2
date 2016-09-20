@@ -1,37 +1,36 @@
 <?xml version="1.0" ?>
 <PluginMetadata>
-	<Title>TRMM3B42RT_New</Title>
+	<Title>TRMM3B42_New</Title>
 	<DaysPerInputData>1</DaysPerInputData>
 	<NoDataValue>-99999</NoDataValue>
 	<Resolution>25000</Resolution>
 	<CompositesContinueIntoNextYear>TRUE</CompositesContinueIntoNextYear>
 	<ExtraDownloadFiles/>
 	<Download>
-		<DownloadFactoryClassName>TRMM3B42RT_NewFactory</DownloadFactoryClassName>
+		<DownloadFactoryClassName>TRMM3B42_NewFactory</DownloadFactoryClassName>
 		<Mode>http</Mode>
 		<HTTP>
-			<URL>http://disc2.gesdisc.eosdis.nasa.gov/data/TRMM_RT/TRMM_3B42RT_Daily.7/</URL>
+			<URL>http://disc2.gesdisc.eosdis.nasa.gov/data/TRMM_L3/TRMM_3B42_Daily.7/</URL>
 		</HTTP>
-		
 		<TimeZone>CST6CDT</TimeZone>
 		<FilesPerDay>1</FilesPerDay>
 		<DatePattern>\d{4}</DatePattern>
-		<FileNamePattern>3B42RT_daily\.(\d{4})\.(\d{2})\.(\d{2})\.7\.nc4</FileNamePattern>
+		<FileNamePattern>3B42_daily\.(\d{4}d{2}d{2})\.7\.nc4</FileNamePattern>
 		<OriginDate>
 			<DayOfMonth>01</DayOfMonth>
-			<Month>March</Month>
-			<Year>2000</Year>
+			<Month>January</Month>
+			<Year>1998</Year>
 		</OriginDate>
 	</Download>	
 	<Processor>
-		<ProcessStep>TRMM3B42RT_NewConvert</ProcessStep>
-		<ProcessStep>TRMM3B42RT_NewReproject</ProcessStep>
-		<ProcessStep>TRMM3B42RT_NewClip</ProcessStep>
-		<ProcessStep>TRMM3B42RT_NewMask</ProcessStep>
+		<ProcessStep>TRMM3B42_NewConvert</ProcessStep>
+		<ProcessStep>TRMM3B42_NewReproject</ProcessStep>
+		<ProcessStep>TRMM3B42_NewClip</ProcessStep>
+		<ProcessStep>TRMM3B42_NewMask</ProcessStep>
 		<NumberOfOutput>1</NumberOfOutput>
 	</Processor>
 	<Indices>
-		<ClassName>TRMM3B42RT_NewIndex</ClassName>
+		<ClassName>TRMM3B42_NewIndex</ClassName>
 	</Indices>
 	<Summary>
 		<Temporal>
