@@ -8,10 +8,16 @@ import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.ogr.DataSource;
 import org.gdal.ogr.ogr;
 
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.dt.image.image.ImageDatasetFactory;
+import version2.prototype.Config;
 import version2.prototype.ConfigReadException;
+import version2.prototype.ErrorLog;
 import version2.prototype.Projection;
 import version2.prototype.Projection.ResamplingType;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -157,9 +163,9 @@ public class GdalUtils {
                                 output.getPath(),
                                 (int) Math.ceil((right - left)
                                         / (projection.getPixelSize())),
-                                        (int) Math.ceil((top - bottom)
-                                                / (projection.getPixelSize())),
-                                                1, gdalconstConstants.GDT_Float32);
+                                (int) Math.ceil((top - bottom)
+                                        / (projection.getPixelSize())),
+                                1, gdalconstConstants.GDT_Float32);
 
                 // TODO: get projection from project info, and get transform from
                 // shape file
@@ -191,5 +197,57 @@ public class GdalUtils {
                 inputDS.delete();
             }
         }
+    }
+
+    /* @param: inFile - the input NetCDF file
+     * @param: outFile - the output Tiff file
+     * @param: getTrans - geotransformation
+     * @param: projectionStr - the coordinate system
+     */
+    public static void NetCDF2Tiff(String inFile, String outFile,
+            double[] geoTrans, String projectionStr, double nodataV) throws Exception
+    {
+
+        // open the netcdf file into a buffered image
+        GridDataset gd = GridDataset.open(inFile);
+        ImageDatasetFactory imageFactory = new ImageDatasetFactory();
+        imageFactory.openDataset(gd.getGrids().get(0));
+        BufferedImage image = imageFactory.getNextImage(true);
+        System.out.println("after buffered image");
+        GdalUtils.register();
+        synchronized (GdalUtils.lockObject) {
+
+            Raster raster = image.getData();
+            int xSize=raster.getWidth();
+            int ySize=raster.getHeight();
+
+            //write to a tiff file
+            Dataset outputDS = gdal.GetDriverByName("GTiff").Create(
+                    outFile,
+                    xSize, ySize,
+                    1,
+                    gdalconstConstants.GDT_Float32
+                    );
+
+            double[] array = new double[xSize];
+            for (int row=0; row<ySize; row++)
+            {
+                for (int col=0; col<xSize; col++)
+                {
+                    array[col] = raster.getSampleDouble(col, row, 0);
+                }
+                outputDS.GetRasterBand(1).WriteRaster(0, row, xSize, 1, array);
+            }
+
+            outputDS.GetRasterBand(1).SetNoDataValue(nodataV);
+            //set geotransformation
+            outputDS.SetGeoTransform(geoTrans);
+            // set coordinate system
+            outputDS.SetProjection(projectionStr);
+            outputDS.GetRasterBand(1).ComputeStatistics(false);
+            outputDS.delete();
+
+        }
+
     }
 }
