@@ -14,7 +14,7 @@ public class ReadTifFile
 
         synchronized (GdalUtils.lockObject)
         {
-            String tifFile = "c:\\test\\IMERG_RT\\testProj1.tif";
+            String tifFile = "c:\\test\\TRMM\\output.tif";
             Dataset baseDS= gdal.Open(tifFile);
 
             Band baseBand = baseDS.GetRasterBand(1);

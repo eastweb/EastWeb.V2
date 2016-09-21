@@ -1,4 +1,4 @@
-package version2.prototype.download.TRMM3B42_New;
+package version2.prototype.download.TRMM3B42RT_New;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,9 +23,9 @@ import version2.prototype.download.ListDatesFiles;
 
 // @Author: Yi Liu
 
-public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
+public class TRMM3B42RT_NewListDatesFiles extends ListDatesFiles
 {
-    public TRMM3B42_NewListDatesFiles(DataDate startDate, DownloadMetaData data, ProjectInfoFile project) throws IOException
+    public TRMM3B42RT_NewListDatesFiles(DataDate startDate, DownloadMetaData data, ProjectInfoFile project) throws IOException
     {
         super(startDate, data, project);
     }
@@ -45,7 +45,6 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
         // DataDate.toCompactString() returns a date in the format of yyyy-mm-dd-hh
         // get the substring of yyyy-mm-dd and remove the '-'
         String startDateStr = (sDate.toCompactString().substring(0, 10)).replaceAll("-", "");
-        // System.out.println(startDateStr);
 
         String yearPattern = "(19|20)\\d\\d/";
         String monthPattern = "(0?[1-9]|1[012])/";
@@ -81,7 +80,7 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
                         {
                             String yearFolderURL = mHostURL + String.format("%04d", year);
 
-                            //ArrayList<String> monthList = new ArrayList<String>();
+                            //System.out.println(yearFolderURL);
 
                             ByteArrayOutputStream monthFolderOutstream = new ByteArrayOutputStream();
                             DownloadUtils.downloadToStream(new URL(yearFolderURL), monthFolderOutstream);
@@ -107,10 +106,6 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
                                             if (((year == sDate.getYear()) && (month >= sDate.getMonth()))
                                                     || (year > sDate.getYear()))
                                             {
-                                                /*  System.out.println("inside: " + mHostURL);
-                                                System.out.println(year);
-                                                System.out.println(matcherM.group());
-                                                 */
                                                 String monthFolderURL = mHostURL + String.format("%04d/%s", year, matcherM.group());
                                                 // System.out.println("url : " + monthFolderURL);
 
@@ -122,8 +117,8 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
                                                 for(String paramF : availableFiles)
                                                 {
                                                     //FIXME: cannot match if mData.fileNamePattern is used.
-                                                    // file pattern: 3B42_daily\.(\d{8})\.7\.nc4
-                                                    Pattern patternF = Pattern.compile("3B42_Daily\\.(\\d{8})\\.7\\.nc4");
+                                                    // file pattern: 3B42RT_daily\.(\d{8})\.7\.nc4
+                                                    Pattern patternF = Pattern.compile("3B42RT_Daily\\.(\\d{8})\\.7\\.nc4");
                                                     //Pattern patternF = mData.fileNamePattern;
                                                     Matcher matcherF = patternF.matcher(paramF);
 
@@ -133,8 +128,10 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
                                                          * than the start date
                                                          */
                                                         String fileDate = matcherF.group(1);
+                                                        //System.out.println(fileDate);
                                                         if (fileDate.compareTo(startDateStr) >= 0)
                                                         {
+                                                            // System.out.println(matcherF.group());
                                                             ArrayList<String> fileList = new ArrayList<String>();
                                                             // add file name to the list
                                                             fileList.add(matcherF.group());
@@ -155,7 +152,7 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
                                     }
                                     catch(Exception e)
                                     {
-                                        ErrorLog.add(Config.getInstance(), mData.Title, mData.name, "TRMM3B42_NewListDatesFiles.ListDatesFilesHTTP problem while getting file list.", e);
+                                        ErrorLog.add(Config.getInstance(), mData.Title, mData.name, "TRMM3B42RT_NewListDatesFiles.ListDatesFiles: HTTP problem while getting file list.", e);
                                     }
                                 }
                             }
@@ -164,7 +161,7 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
                     }
                     catch(Exception e)
                     {
-                        ErrorLog.add(Config.getInstance(), mData.Title, mData.name, "TRMM3B42_NewListDatesFiles.ListDatesFilesHTTP problem while getting file list.", e);
+                        ErrorLog.add(Config.getInstance(), mData.Title, mData.name, "TRMM3B42RT_NewListDatesFiles.ListDatesFiles: HTTP problem while getting file list.", e);
                     }
                 }
             }
@@ -172,7 +169,7 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
         }
         catch(Exception e)
         {
-            ErrorLog.add(Config.getInstance(), mData.Title, mData.name, "TRMM3B42_NewListDatesFiles.ListDatesFilesHTTP problem while getting file list.", e);
+            ErrorLog.add(Config.getInstance(), mData.Title, mData.name, "TRMM3B42RT_NewListDatesFiles.ListDatesFiles: HTTP problem while getting file list.", e);
         }
 
         return tempMapDatesFiles;

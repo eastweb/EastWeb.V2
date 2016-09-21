@@ -10,8 +10,9 @@ import version2.prototype.util.GdalUtils;
 
 public class TRMM3B42_NewConvert extends Convert
 {
-    private String myfile;
+    /* private String myfile;
     private String outfile;
+     */
     private Integer noDataValue;
     private final double [] gTran = new double[] {
             0.125, 0.25, 0,
@@ -23,6 +24,7 @@ public class TRMM3B42_NewConvert extends Convert
         super(data, deleteInputDirectory);
         noDataValue = data.getNoDataValue();
     }
+
 
     @Override
     protected void convertFiles() throws Exception
@@ -39,6 +41,7 @@ public class TRMM3B42_NewConvert extends Convert
             GdalUtils.NetCDF2Tiff(f.getAbsolutePath(), outFile, gTran, projInfo, noDataValue);
         }
     }
+
 
 }
 

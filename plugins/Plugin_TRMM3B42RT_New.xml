@@ -16,7 +16,7 @@
 		<TimeZone>CST6CDT</TimeZone>
 		<FilesPerDay>1</FilesPerDay>
 		<DatePattern>\d{4}</DatePattern>
-		<FileNamePattern>3B42RT_daily\.(\d{4}d{2}d{2})\.7\.nc4</FileNamePattern>
+		<FileNamePattern>3B42RT_daily\.(\d{8})\.7\.nc4</FileNamePattern>
 		<OriginDate>
 			<DayOfMonth>01</DayOfMonth>
 			<Month>March</Month>
