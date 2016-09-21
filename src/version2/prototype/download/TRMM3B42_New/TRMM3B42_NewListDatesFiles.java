@@ -87,10 +87,10 @@ public class TRMM3B42_NewListDatesFiles extends ListDatesFiles
 
                                 if (matcherM.find())
                                 {
-                                    System.out.println(paramM);
+                                    //System.out.println(paramM);
                                     try
                                     {
-                                        System.out.println(matcherM.group());
+                                        //System.out.println(matcherM.group());
                                         int month = Integer.parseInt(matcherM.group());
                                         System.out.println("month: " + month);
                                     }

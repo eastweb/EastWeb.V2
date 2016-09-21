@@ -52,7 +52,6 @@ public class TestTRMM_NewListDates
                 System.out.println(entry.getKey() + ":/ " +  entry.getValue());
             }
 
-
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
