@@ -213,7 +213,7 @@ public class GdalUtils {
         ImageDatasetFactory imageFactory = new ImageDatasetFactory();
         imageFactory.openDataset(gd.getGrids().get(0));
         BufferedImage image = imageFactory.getNextImage(true);
-        System.out.println("after buffered image");
+
         GdalUtils.register();
         synchronized (GdalUtils.lockObject) {
 
@@ -247,6 +247,8 @@ public class GdalUtils {
             outputDS.GetRasterBand(1).ComputeStatistics(false);
             outputDS.delete();
 
+            image.flush();
+            gd.close();
         }
 
     }
