@@ -36,7 +36,7 @@ public class ConnectionContext {
         } catch (Exception e) {
             ErrorLog.add(Config.getInstance(), "ConnectionContext.getConnection problem with creating conection.", e);
         }
-        System.out.println(connection);
+        //System.out.println(connection);
         return connection;
     }
 
