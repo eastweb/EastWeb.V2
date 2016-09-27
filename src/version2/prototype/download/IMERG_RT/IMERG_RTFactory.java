@@ -25,7 +25,7 @@ public class IMERG_RTFactory extends DownloadFactory {
 
     @Override
     public DownloaderFactory CreateDownloaderFactory(ListDatesFiles listDatesFiles) {
-        return new LocalStorageDownloadFactory(configInstance, "IMERGDownloader", projectInfoFile, pluginInfo, downloadMetaData, pluginMetaData, scheduler, outputCache, listDatesFiles,
+        return new LocalStorageDownloadFactory(configInstance, "IMERG_RTDownloader", projectInfoFile, pluginInfo, downloadMetaData, pluginMetaData, scheduler, outputCache, listDatesFiles,
                 startDate);
     }
 
