@@ -57,10 +57,11 @@ public class IMERGListDatesFiles extends ListDatesFiles{
         try
         {
             LocalDate currentDate = new LocalDate();
-            //LocalDate currentDate = new LocalDate(2014, 6,30);
+            //LocalDate currentDate = new LocalDate(2016, 01, 02);
             LocalDate startDate = new LocalDate(sDate.getYear(), sDate.getMonth(), sDate.getDay());
 
-            for (LocalDate d = startDate; d.isBefore(currentDate); d = d.plusDays(1))
+            for (LocalDate d = startDate; d.isBefore(currentDate)|| d.isEqual(currentDate);
+                    d = d.plusDays(1))
             {
                 // format the file directory
                 // ftp://arthurhou.pps.eosdis.nasa.gov/gpmdata/yyyy/mm/dd
@@ -82,7 +83,7 @@ public class IMERGListDatesFiles extends ListDatesFiles{
                     ArrayList<String> fileNames = new ArrayList<String>();
 
                     //filename pattern:
-                    //3B-DAY-GIS\.MS\.MRG\.3IMERG\.(\d{8})-S000000-E235959\.(\d{4})\.V03D\.tif
+                    //3B-DAY-GIS\.MS\.MRG\.3IMERG\.(\d{8})-S000000-E235959\.(\d{4}|\d{5})\.V03D\.tif
                     //if (file.isFile() &&
                     if (mData.fileNamePattern.matcher(file.getName()).matches())
                     {

@@ -28,10 +28,10 @@ public class TestIMERGListDates
         int filesPerDay = 1;
         String datePatternStr = "\\d{4}";
         String fileNamePatternStr =
-                "3B-DAY-GIS\\.MS\\.MRG\\.3IMERG\\.(\\d{4}\\d{2}\\d{2})-S000000-E235959\\.(\\d{4})\\.V03D\\.tif";
+                "3B-DAY-GIS\\.MS\\.MRG\\.3IMERG\\.(\\d{8})-S000000-E235959\\.(\\d{4}|\\d{5})\\.V03D\\.tif";
 
-        //LocalDate ld = LocalDate.parse("Wed Sep 07 00:00:01 CDT 2016", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
-        LocalDate ld = LocalDate.parse("Sun Jun 01 00:00:01 CDT 2014", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
+        LocalDate ld = LocalDate.parse("Mon Dec 28 00:00:01 CDT 2015", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
+        //LocalDate ld = LocalDate.parse("Sun Jun 01 00:00:01 CDT 2014", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
 
         DownloadMetaData data = new DownloadMetaData(null, null, null, 10000, true, null,
                 mode, myFtp, myHttp, className, timeZone, filesPerDay,
@@ -57,7 +57,7 @@ public class TestIMERGListDates
                 System.out.println(entry.getKey() + ":/ " +  entry.getValue());
 
                 //download
-                IMERGDownloader dImerg = new IMERGDownloader(entry.getKey(), "d:\\test\\IMERG_Downnload", data, entry.getValue().get(0));
+                /*        IMERGDownloader dImerg = new IMERGDownloader(entry.getKey(), "d:\\test\\IMERG_Downnload", data, entry.getValue().get(0));
                 try {
                     dImerg.download();
                 } catch (DownloadFailedException e) {
@@ -69,7 +69,7 @@ public class TestIMERGListDates
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                }
+                }*/
             }
 
 
