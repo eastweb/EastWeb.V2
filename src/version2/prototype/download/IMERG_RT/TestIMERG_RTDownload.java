@@ -29,10 +29,10 @@ public class TestIMERG_RTDownload
         int filesPerDay = 1;
         String datePatternStr = "\\d{4}";
         String fileNamePatternStr =
-                "3B-HHR-L\\.MS\\.MRG\\.3IMERG\\.(\\d{8})-S233000-E235959\\.1410\\.V03E\\.1day\\.tif((\\.gz){0,1})";
+                "3B-HHR-L\\.MS\\.MRG\\.3IMERG\\.(\\d{8})-S233000-E235959\\.1410\\.V03E\\.1day\\.tif((\\.gz)?)";
 
         LocalDate ld = LocalDate.parse("Mon Dec 28 00:00:01 CDT 2015", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
-        // LocalDate ld = LocalDate.parse("Wed Sep 14 00:00:01 CDT 2016", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
+        //LocalDate ld = LocalDate.parse("Wed Sep 14 00:00:01 CDT 2016", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
 
         DownloadMetaData data = new DownloadMetaData(null, null, null, 10000, true, null,
                 mode, myFtp, myHttp, className, timeZone, filesPerDay,

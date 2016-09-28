@@ -26,10 +26,13 @@ public class IMERG_RTListDatesFiles extends ListDatesFiles{
 
     private Map<DataDate, ArrayList<String>>  tempMapDatesToFiles = new HashMap<DataDate, ArrayList<String>>();
 
+    // although exactly the same, the pattern fetched from the plugin file does not work
+    private String fileNamePatternStr =
+            "3B-HHR-L\\.MS\\.MRG\\.3IMERG\\.(\\d{8})-S233000-E235959\\.1410\\.V03E\\.1day\\.tif((\\.gz)?)";
+
     public IMERG_RTListDatesFiles(DataDate date, DownloadMetaData data, ProjectInfoFile project) throws IOException
     {
         super(date, data, project);
-        System.out.println(sDate);
     }
 
 
@@ -67,7 +70,6 @@ public class IMERG_RTListDatesFiles extends ListDatesFiles{
 
             //int currentYear = 2016;
             //int currentMonth = 1;
-
 
             int startYear = sDate.getYear();
             int startMonth = sDate.getMonth();
@@ -135,9 +137,12 @@ public class IMERG_RTListDatesFiles extends ListDatesFiles{
             ArrayList<String> fileNames = new ArrayList<String>();
 
             //filename pattern:
-            //3B-HHR-L\.MS\.MRG\.3IMERG\.(\d{8})-S233000-E235959\.1410\.V03E\.1day\.tif((\.gz){0,1})
-            if (file.isFile() &&
+            //3B-HHR-L\.MS\.MRG\.3IMERG\.(\d{8})-S233000-E235959\.1410\.V03E\.1day\.tif((\.gz)?)
+            /*  if (file.isFile() &&
                     mData.fileNamePattern.matcher(file.getName()).matches())
+             */
+            if (file.isFile() &&
+                    Pattern.compile(fileNamePatternStr).matcher(file.getName()).matches())
             {
 
                 fileNames.add(file.getName());
