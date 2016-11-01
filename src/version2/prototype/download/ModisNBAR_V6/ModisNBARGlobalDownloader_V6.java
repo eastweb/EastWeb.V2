@@ -57,7 +57,7 @@ public class ModisNBARGlobalDownloader_V6 extends GlobalDownloader
         try {
             stmt = con.createStatement();
         } catch (SQLException e) {
-            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader.run problem while attempting to handle download.", e);
+            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader_V6.run problem while attempting to handle download.", e);
             return;
         }
 
@@ -70,7 +70,7 @@ public class ModisNBARGlobalDownloader_V6 extends GlobalDownloader
         try {
             cachedD = GetAllDownloadedFiles();
         } catch (ClassNotFoundException | SQLException | ParserConfigurationException | SAXException | IOException | RegistrationException e) {
-            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader.run problem while setting up current list of missing download files.", e);
+            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader_V6.run problem while setting up current list of missing download files.", e);
         }
 
         // Step 3: Remove already downloaded files from ListDatesFiles
@@ -122,21 +122,21 @@ public class ModisNBARGlobalDownloader_V6 extends GlobalDownloader
                         try{
                             downloader.download();
                         } catch (DownloadFailedException e) {
-                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader.run problem while running ModisNBARDownloader.", e);
+                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader_V6.run problem while running ModisNBARDownloader.", e);
                         } catch (Exception e) {
-                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader.run problem while running ModisNBARDownloader.", e);
+                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader_V6.run problem while running ModisNBARDownloader.", e);
                         }
 
                         try {
                             AddDownloadFile(stmt, dd.getYear(), dd.getDayOfYear(), downloader.getOutputFilePath());
                         } catch (ClassNotFoundException | SQLException | ParserConfigurationException | SAXException | IOException | RegistrationException e) {
-                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader.run problem while attempting to add download file.", e);
+                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader_V6.run problem while attempting to add download file.", e);
                         }
                     }
 
                 }
             } catch (IOException e) {
-                ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader.run problem while attempting to handle download.", e);
+                ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARGlobalDownloader_V6.run problem while attempting to handle download.", e);
             }
         }
         try {

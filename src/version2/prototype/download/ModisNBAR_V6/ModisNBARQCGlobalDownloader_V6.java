@@ -58,7 +58,7 @@ public class ModisNBARQCGlobalDownloader_V6 extends GlobalDownloader
         try {
             stmt = con.createStatement();
         } catch (SQLException e) {
-            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader.run problem while attempting to add download file.", e);
+            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader_V6.run problem while attempting to add download file.", e);
             return;
         }
 
@@ -99,7 +99,7 @@ public class ModisNBARQCGlobalDownloader_V6 extends GlobalDownloader
                 datesFiles.put(thisDate, files);
             }
         } catch (ClassNotFoundException | SQLException | ParserConfigurationException | SAXException | IOException | RegistrationException e) {
-            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader.run problem while setting up current list of missing download files.", e);
+            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader_V6.run problem while setting up current list of missing download files.", e);
         }
 
         // Step 4
@@ -125,19 +125,19 @@ public class ModisNBARQCGlobalDownloader_V6 extends GlobalDownloader
                         try{
                             downloader.download();
                         } catch (DownloadFailedException e) {
-                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader.run problem while running ModisNBARQCDownloader.", e);
+                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader_V6.run problem while running ModisNBARQCDownloader.", e);
                         } catch (Exception e) {
-                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader.run problem while running ModisNBARQCDownloader.", e);
+                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader_V6.run problem while running ModisNBARQCDownloader.", e);
                         }
                         try {
                             AddDownloadFile(stmt, dd.getYear(), dd.getDayOfYear(), downloader.getOutputFilePath());
                         } catch (ClassNotFoundException | SQLException | RegistrationException e) {
-                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader.run problem while attempting to add download file.", e);
+                            ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader_V6.run problem while attempting to add download file.", e);
                         }
                     }
                 }
             } catch (ParserConfigurationException | SAXException | IOException e) {
-                ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader.run problem while attempting to handle download.", e);
+                ErrorLog.add(Config.getInstance(), pluginName, metaData.name, "ModisNBARQCGlobalDownloader_V6.run problem while attempting to handle download.", e);
             }
         }
         try {
