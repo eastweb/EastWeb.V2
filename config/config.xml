@@ -3,7 +3,7 @@
 <ErrorLogDir>C:\EASTWeb\</ErrorLogDir>
 <DownloadDir>C:\EASTWeb\Downloads\</DownloadDir>
 <Database>
-<GlobalSchema>EASTWeb</GlobalSchema>
+<GlobalSchema>Test_EASTWeb1</GlobalSchema>
 <HostName>localhost</HostName>
 <Port>5432</Port>
 <DatabaseName>postgres</DatabaseName>

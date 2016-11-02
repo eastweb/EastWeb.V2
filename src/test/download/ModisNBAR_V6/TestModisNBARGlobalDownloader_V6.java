@@ -27,10 +27,11 @@ import version2.prototype.download.RegistrationException;
 //import version2.prototype.download.ModisNBAR.ModisNBARQCGlobalDownloader;
 import version2.prototype.download.ModisNBAR.ModisNBARQCListDatesFiles;
 import version2.prototype.download.ModisNBAR_V6.ModisNBARGlobalDownloader_V6;
+import version2.prototype.download.ModisNBAR_V6.ModisNBARListDatesFiles_V6;
 
 
 public class TestModisNBARGlobalDownloader_V6 {
-    private static Config configInstance = Config.getAnInstance("src/test/config.xml");
+    private static Config configInstance = Config.getAnInstance("C:\\Users\\Shihan\\Desktop\\EastWeb.V2\\src\\test\\config.xml");
 
     private static DownloadMetaData data;
     private static ProjectInfoFile p;
@@ -65,14 +66,15 @@ public class TestModisNBARGlobalDownloader_V6 {
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
+        data = null;
     }
 
     @Test
     public void testRun() throws IOException, ClassNotFoundException, ParserConfigurationException, SAXException, SQLException, RegistrationException {
-        ListDatesFiles ldf= new ModisNBARQCListDatesFiles(new DataDate(data.originDate), data, p);
+        ListDatesFiles ldf= new ModisNBARListDatesFiles_V6(new DataDate(data.originDate), data, p);
         LocalDate startDate = LocalDate.now().minusDays(14);
 
-        ModisNBARGlobalDownloader_V6 ttd = new ModisNBARGlobalDownloader_V6 (1, Config.getAnInstance("src/test/config.xml"), "ModisNBAR",  data,  ldf, startDate);
+        ModisNBARGlobalDownloader_V6 ttd = new ModisNBARGlobalDownloader_V6 (1, Config.getAnInstance("C:\\Users\\Shihan\\Desktop\\EastWeb.V2\\src\\test\\config.xml"), "ModisNBAR_V6",  data,  ldf, startDate);
 
         ttd.run();
     }

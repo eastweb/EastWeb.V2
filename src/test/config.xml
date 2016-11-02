@@ -1,22 +1,29 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <config>
-	<ErrorLogDir>C:\EASTWeb_Test</ErrorLogDir>
-	<DownloadDir>C:\EASTWeb_Test\Downloads</DownloadDir>
-	<Database>
-		<GlobalSchema>Test_EASTWeb1</GlobalSchema>
-		<HostName>localhost</HostName>
-		<Port>5432</Port>
-		<DatabaseName>postgres</DatabaseName>
-		<UserName>postgres</UserName>
-		<PassWord>eastweb</PassWord>
-		<MaxNumOfConnectionsPerInstance>100</MaxNumOfConnectionsPerInstance>
-	</Database>
-	<Output>
-		<SummaryCalculation>Max</SummaryCalculation>
-		<SummaryCalculation>Mean</SummaryCalculation>
-		<SummaryCalculation>Min</SummaryCalculation>
-		<SummaryCalculation>SqrSum</SummaryCalculation>
-		<SummaryCalculation>StdDev</SummaryCalculation>
-		<SummaryCalculation>Sum</SummaryCalculation>
-	</Output>
+<ErrorLogDir>C:\EASTWeb_Test\</ErrorLogDir>
+<DownloadDir>C:\EASTWeb_Test\Downloads\</DownloadDir>
+<Database>
+<GlobalSchema>Test_EASTWeb1</GlobalSchema>
+<HostName>localhost</HostName>
+<Port>5432</Port>
+<DatabaseName>postgres</DatabaseName>
+<UserName>postgres</UserName>
+<PassWord>eastweb</PassWord>
+<MaxNumOfConnectionsPerInstance>50</MaxNumOfConnectionsPerInstance>
+</Database>
+<Output>
+<TemporalSummaryCompositionStrategy>GregorianWeeklyStrategy</TemporalSummaryCompositionStrategy>
+<TemporalSummaryCompositionStrategy>GregorianMonthlyStrategy</TemporalSummaryCompositionStrategy>
+<TemporalSummaryCompositionStrategy>GregorianDailyStrategy</TemporalSummaryCompositionStrategy>
+<TemporalSummaryCompositionStrategy>CDCWeeklyStrategy</TemporalSummaryCompositionStrategy>
+<TemporalSummaryCompositionStrategy>WHOWeeklyStrategy</TemporalSummaryCompositionStrategy>
+<TemporalSummaryCompositionStrategy>CompositeOf8Days</TemporalSummaryCompositionStrategy>
+<SummaryCalculation>Count</SummaryCalculation>
+<SummaryCalculation>Max</SummaryCalculation>
+<SummaryCalculation>Mean</SummaryCalculation>
+<SummaryCalculation>Min</SummaryCalculation>
+<SummaryCalculation>SqrSum</SummaryCalculation>
+<SummaryCalculation>StdDev</SummaryCalculation>
+<SummaryCalculation>Sum</SummaryCalculation>
+</Output>
 </config>

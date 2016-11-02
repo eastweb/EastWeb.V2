@@ -74,7 +74,7 @@ public class TestModisNABRQCGlobalDownloader_V6 {
         ListDatesFiles ldf= new ModisNBARListDatesFiles(new DataDate(data.originDate), data, p);
         LocalDate startDate = LocalDate.now().minusDays(14);
 
-        ModisNBARQCGlobalDownloader_V6 ttd = new ModisNBARQCGlobalDownloader_V6(1, Config.getAnInstance("src/test/config.xml"), "ModisNBAR",  data,  ldf, startDate);
+        ModisNBARQCGlobalDownloader_V6 ttd = new ModisNBARQCGlobalDownloader_V6(1, Config.getAnInstance("src/test/config.xml"), "ModisNBAR_V6",  data,  ldf, startDate);
         ttd.run();
     }
 
