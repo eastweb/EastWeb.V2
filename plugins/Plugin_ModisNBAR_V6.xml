@@ -3,7 +3,7 @@
 	<Title>ModisNBAR_V6</Title>
 	<DaysPerInputData>16</DaysPerInputData>
 	<NoDataValue>-99999</NoDataValue>
-	<Resolution>1000</Resolution>
+	<Resolution>500</Resolution>
 	<CompositesContinueIntoNextYear>FALSE</CompositesContinueIntoNextYear>
 	<ExtraDownloadFiles>
 		<Name>QC</Name>
@@ -33,7 +33,7 @@
 		<TimeZone>CST6CDT</TimeZone>
 		<FilesPerDay>322</FilesPerDay>
 		<DatePattern>\d{4}</DatePattern>
-		<FileNamePattern>MCD43A2.A(\d{7}).h(\d{2})v(\d{2}).005.(\d{13}).hdf</FileNamePattern>
+		<FileNamePattern>MCD43A2.A(\d{7}).h(\d{2})v(\d{2}).006.(\d{13}).hdf</FileNamePattern>
 	</Download>
 	<Processor>
 		<ProcessStep>ModisNBARFilterMozaic_V6</ProcessStep>
