@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ProjectInfo>
 	<Plugins>
@@ -27,7 +26,7 @@
 	<CoolingDegree>1</CoolingDegree>
 	<HeatingDate>Thu Oct 01 09:40:40 CDT 1970</HeatingDate>
 	<HeatingDegree>1</HeatingDegree>
-	<CoordinateSystem>ALBERS_EQUAL_AREA<LatitudeOfOrigin>1</LatitudeOfOrigin></CoordinateSystem>
+	<CoordinateSystem>ALBERS_EQUAL_AREA</CoordinateSystem>
 	<ReSampling>BILINEAR</ReSampling>
 	<Datum>NAD83</Datum>
 	<PixelSize>500</PixelSize>
@@ -35,7 +34,7 @@
 	<CentalMeridian>1</CentalMeridian>
 	<FalseEasting>1</FalseEasting>
 	<StandardParallel2>1</StandardParallel2>
-	
+	<LatitudeOfOrigin>1</LatitudeOfOrigin>
 	<FalseNothing>1</FalseNothing>
 	<ScalingFactor>1</ScalingFactor>
 	<Summaries>
