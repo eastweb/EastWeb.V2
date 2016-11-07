@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ProjectInfo>
+<Plugins>
+<Plugin name="ModisNBAR_V6">
+<Indicies>ModisNBARNDVIV_V6</Indicies>
+<Indicies>ModisNBAREVI_V6</Indicies>
+<Indicies>ModisNBARNDWI5V-V6</Indicies>
+<QC>  Highest</QC>
+</Plugin>
+</Plugins>
+<StartDate>Sat Oct 01 18:39:23 CDT 2016</StartDate>
+<ProjectName>test_MODISNBAR_V6</ProjectName>
+<WorkingDir>C:\EASTWeb_Test</WorkingDir>
+<Masking>
+<File>C:\Users\Shihan\Desktop\eclipse\workspace\EastWeb.V2\Documentation\TestCases\Ethiopia Files\Ethiopia_watermask.tif</File>
+<Resolution>500</Resolution>
+</Masking>
+<MasterShapeFile>C:\Users\Shihan\Desktop\eclipse\workspace\EastWeb.V2\Documentation\TestCases\Ethiopia Files\Woreda_hacked.shp</MasterShapeFile>
+<TimeZone>(GMT+0:00) Africa/Abidjan</TimeZone>
+<Clipping>false</Clipping>
+<FreezingDate>Thu Jan 01 00:00:00 CST 1970</FreezingDate>
+<CoolingDegree>0</CoolingDegree>
+<HeatingDate>Thu Jan 01 00:00:00 CST 1970</HeatingDate>
+<HeatingDegree>0</HeatingDegree>
+<ReSampling>NEAREST_NEIGHBOR</ReSampling>
+<PixelSize>500</PixelSize>
+<Summaries>
+<Summary ID="1">AreaNameField: W_NAME; Shape File Path: C:\Users\Shihan\Desktop\eclipse\workspace\EastWeb.V2\Documentation\TestCases\Ethiopia Files\Woreda_hacked.shp; AreaCodeField: WID; Temporal Summary: CDCWeeklyStrategy</Summary>
+</Summaries>
+</ProjectInfo>
