@@ -111,7 +111,7 @@ public class ModisNBARQCGlobalDownloader_V6 extends GlobalDownloader
                 outFolder = FileSystem.GetGlobalDownloadDirectory(configInstance, pluginName, metaData.name);
 
                 //REMOVE the following statement, for testing only
-                outFolder = "D:\\project\\download\\ModisNBAR";
+                //outFolder = "D:\\project\\download\\ModisNBAR_V6";
 
                 DataDate dd = entry.getKey();
 

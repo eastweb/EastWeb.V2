@@ -31,7 +31,7 @@ import version2.prototype.download.ModisNBAR_V6.ModisNBARQCGlobalDownloader_V6;
 
 
 public class TestModisNABRQCGlobalDownloader_V6 {
-    private static Config configInstance = Config.getAnInstance("src/test/config.xml");
+    private static Config configInstance = Config.getAnInstance("C:\\Users\\Shihan\\Desktop\\EastWeb.V2\\src\\test\\config.xml");
 
     private static DownloadMetaData data;
     private static ProjectInfoFile p;
@@ -40,7 +40,7 @@ public class TestModisNABRQCGlobalDownloader_V6 {
     {
         String mode = "HTTP";// the protocol type: ftp or http
         FTP myFtp = null;
-        HTTP myHttp = new HTTP("http://e4ftl01.cr.usgs.gov/MOTA/MCD43A4.006/");;
+        HTTP myHttp = new HTTP("http://e4ftl01.cr.usgs.gov/MOTA/MCD43A2.006/");;
         // String className = null;
         String timeZone = null;
         int filesPerDay = -1;

@@ -39,7 +39,7 @@ public class TestModisNBARGlobalDownloader_V6 {
     public static void setUpBeforeClass() throws Exception {
         String mode = "HTTP";// the protocol type: ftp or http
         FTP myFtp = null;
-        HTTP myHttp = new HTTP("http://e4ftl01.cr.usgs.gov/MOTA/MCD43A2.006/");;
+        HTTP myHttp = new HTTP("http://e4ftl01.cr.usgs.gov/MOTA/MCD43A4.006/");;
         // String className = null;
         String timeZone = null;
         int filesPerDay = -1;

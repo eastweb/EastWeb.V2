@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ProjectInfo>
 	<Plugins>
-		<Plugin name="ModisNBAR">
+		<Plugin name="ModisNBAR_V6">
 			<Indicies>ModisNBARNDVI</Indicies>
 			<Indicies>ModisNBAREVI</Indicies>
 			<Indicies>ModisNBARNDWI5</Indicies>
@@ -17,7 +17,7 @@
 	<WorkingDir>C:\EASTWeb</WorkingDir>
 	<Masking>
 		<File>\Documentation\TestCases\Ethiopia Files\Ethiopia_watermask.tif</File>
-		<Resolution>1000</Resolution>
+		<Resolution>500</Resolution>
 	</Masking>
 	<MasterShapeFile>\Documentation\TestCases\Ethiopia Files\Woreda_hacked.shp</MasterShapeFile>
 	<TimeZone>(GMT+0:00) Africa/Abidjan</TimeZone>
