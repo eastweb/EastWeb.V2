@@ -62,7 +62,6 @@ public class ModisLSTFilter extends Filter{
                     break;
                 case "band6":
                     bands[3] = inputDS.GetRasterBand(1);
-                    break;
                 }
                 cache.add(inputDS);
             }

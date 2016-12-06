@@ -22,6 +22,7 @@ import version2.prototype.PluginMetaData.HTTP;
 import version2.prototype.ProjectInfoMetaData.ProjectInfoFile;
 //import version2.prototype.download.ModisLST.ModisLSTListDatesFiles;
 import version2.prototype.download.ModisNBAR.ModisNBARListDatesFiles;
+import version2.prototype.download.ModisNBAR_V6.ModisNBARListDatesFiles_V6;
 
 public class TestNBAR_listfiles_V6 {
 
