@@ -5,10 +5,10 @@ import java.util.List;
 
 import version2.prototype.indices.IndicesFramework;
 
-public class ModisLSTV6ight extends IndicesFramework {
+public class ModisLSTV6Night extends IndicesFramework {
     private final int INPUT;
 
-    public ModisLSTV6ight(List<File> inputFiles, File outputFile, Integer noDataValue)
+    public ModisLSTV6Night(List<File> inputFiles, File outputFile, Integer noDataValue)
     {
         super(inputFiles, outputFile, noDataValue);
 

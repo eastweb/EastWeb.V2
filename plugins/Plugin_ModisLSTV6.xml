@@ -24,17 +24,17 @@
 		</OriginDate>
 	</Download>
 	<Processor>
-		<ProcessStep>ModisLSTMozaic</ProcessStep>
-		<ProcessStep>ModisLSTFilter</ProcessStep>
-		<ProcessStep>ModisLSTReproject</ProcessStep>
-		<ProcessStep>ModisLSTMask</ProcessStep>
-		<ProcessStep>ModisLSTClip</ProcessStep>
+		<ProcessStep>ModisLSTV6Mozaic</ProcessStep>
+		<ProcessStep>ModisLSTV6Filter</ProcessStep>
+		<ProcessStep>ModisLSTV6Reproject</ProcessStep>
+		<ProcessStep>ModisLSTV6Mask</ProcessStep>
+		<ProcessStep>ModisLSTV6Clip</ProcessStep>
 		<NumberOfOutput>2</NumberOfOutput>
 	</Processor>
 	<Indices>
-		<ClassName>ModisLSTDay</ClassName>
-		<ClassName>ModisLSTNight</ClassName>
-		<ClassName>ModisLSTMean</ClassName>
+		<ClassName>ModisLSTV6Day</ClassName>
+		<ClassName>ModisLSTV6Night</ClassName>
+		<ClassName>ModisLSTV6Mean</ClassName>
 	</Indices>
 	<Summary>
 		<Temporal>
