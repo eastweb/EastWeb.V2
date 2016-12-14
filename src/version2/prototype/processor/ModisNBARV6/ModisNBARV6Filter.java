@@ -118,7 +118,7 @@ public class ModisNBARV6Filter extends Filter{
                         }
                         break;
                     case "Highest (QA flag = 0)":
-                        if (qc[k] > 1) {
+                        if (qc[k] > 0) {
                             data[k] = noDataValue;
                         }
                         break;
