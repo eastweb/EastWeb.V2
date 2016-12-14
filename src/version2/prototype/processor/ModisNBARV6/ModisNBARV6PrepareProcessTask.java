@@ -30,6 +30,9 @@ public class ModisNBARV6PrepareProcessTask extends PrepareProcessTask {
             folders.add(String.format("%s%s" + File.separator + "%04d" + File.separator+"%03d",
                     FileSystem.GetProcessWorkerTempDirectoryPath(project.GetWorkingDir(), project.GetProjectName(), pPlugin.GetName(), ProcessName.PROCESSOR),
                     "Download", date.getYear(), date.getDayOfYear()));
+            folders.add(String.format("%s%s" + File.separator + "%04d" + File.separator+"%03d",
+                    FileSystem.GetProcessWorkerTempDirectoryPath(project.GetWorkingDir(), project.GetProjectName(), pPlugin.GetName(), ProcessName.PROCESSOR),
+                    "QCDownload", date.getYear(), date.getDayOfYear()));
             break;
         case 2:
             // QCDownload -> MosaicQC
