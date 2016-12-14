@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ProjectInfo>
+<Plugins>
+<Plugin name="ModisNBARV6">
+<Indicies>ModisNBARV6NDVI</Indicies>
+<Indicies>ModisNBARV6EVI</Indicies>
+<ModisTile> h21v07</ModisTile>
+<ModisTile> h21v08</ModisTile>
+<QC> Highest (QA flag = 0)</QC>
+</Plugin>
+</Plugins>
+<StartDate>Thu Dec 01 14:03:50 CST 2016</StartDate>
+<ProjectName>MODISNBARV6_sinceDec2016</ProjectName>
+<WorkingDir>D:\eastweb\testing</WorkingDir>
+<Masking>
+<File>D:\eastweb\release\eastweb_v2.1.1\settings\watermask\Amhara\Ethiopia_watermask.tif</File>
+<Resolution>1000</Resolution>
+</Masking>
+<MasterShapeFile>D:\eastweb\release\eastweb_v2.1.1\settings\shapefiles\Amhara\woreda_epidemia_20160914\woreda_epidemia_20160914.shp</MasterShapeFile>
+<TimeZone>(GMT+0:00) Africa/Abidjan</TimeZone>
+<Clipping>true</Clipping>
+<FreezingDate>Mon Jun 01 00:00:00 CDT 1970</FreezingDate>
+<CoolingDegree>0</CoolingDegree>
+<HeatingDate>Mon Jun 01 00:00:00 CDT 1970</HeatingDate>
+<HeatingDegree>0</HeatingDegree>
+<ReSampling>NEAREST_NEIGHBOR</ReSampling>
+<PixelSize>1000</PixelSize>
+<Summaries>
+<Summary ID="1">AreaNameField: W_NAME; Shape File Path: D:\eastweb\release\eastweb_v2.1.1\settings\shapefiles\Amhara\woreda_epidemia_20160914\woreda_epidemia_20160914.shp; AreaCodeField: WID; Temporal Summary: WHOWeeklyStrategy</Summary>
+</Summaries>
+</ProjectInfo>
