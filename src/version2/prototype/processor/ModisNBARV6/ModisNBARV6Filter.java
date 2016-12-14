@@ -86,7 +86,7 @@ public class ModisNBARV6Filter extends Filter{
                 // change the names to Band1.tif, Band2.tif, and such for the indix calc
                 Dataset outputDS =
                         gdal.GetDriverByName("GTiff").Create
-                        (outputFolder + File.separator + "Band"+i+".tif",
+                        (outputFolder + File.separator + "Band"+(i+1)+".tif",
                                 xSize, ySize, 1, gdalconstConstants.GDT_Int32);
 
                 outputDS.SetGeoTransform(gTrans);
