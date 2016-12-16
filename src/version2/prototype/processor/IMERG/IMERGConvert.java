@@ -75,12 +75,12 @@ public class IMERGConvert extends Convert
                 b.ReadRaster(0, 0, xSize, ySize, inputArray);
                 inputDS.delete();
 
-                // accumulation = value * 0.1
+                // accumulation = value * 0.1 * 24
                 for(int i = 0; i < (xSize*ySize); i++)
                 {
                     // 9999 for missing value
                     if (inputArray[i] < 9999) {
-                        outArray[i] = inputArray[i] * 0.1;
+                        outArray[i] = inputArray[i] * 0.1 * 24;
                     } else {
                         outArray[i] = inputArray[i];
                     }
