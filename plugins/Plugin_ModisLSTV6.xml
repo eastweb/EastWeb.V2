@@ -10,7 +10,7 @@
 		<DownloadFactoryClassName>ModisLSTV6Factory</DownloadFactoryClassName>
 		<Mode>http</Mode>
 		<HTTP>
-			<URL>http://e4ftl01.cr.usgs.gov/MOLT/MOD11A2.006/</URL>
+			<URL>https://e4ftl01.cr.usgs.gov/MOLT/MOD11A2.006/</URL>
 		</HTTP>
 		<TimeZone>CST6CDT</TimeZone>
 		<!-- <FilesPerDay>322</FilesPerDay> -->

@@ -14,6 +14,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
@@ -46,7 +48,17 @@ public final class DownloadUtils {
     }
 
     public static final void downloadToStream(URLConnection conn, OutputStream outStream) throws IOException {
-        if (conn instanceof HttpURLConnection) {
+        if (conn instanceof HttpsURLConnection) {
+
+            ((HttpsURLConnection)conn).setConnectTimeout(30000);
+            ((HttpsURLConnection)conn).connect();
+            final int code = ((HttpsURLConnection)conn).getResponseCode();
+
+            if (code != 200) {
+                throw new IOException("HTTPS request returned code " + code);
+            }
+        }
+        else if (conn instanceof HttpURLConnection) {
             ((HttpURLConnection)conn).setConnectTimeout(30000);
             ((HttpURLConnection)conn).connect();
             final int code = ((HttpURLConnection)conn).getResponseCode();
@@ -117,7 +129,6 @@ public final class DownloadUtils {
      * @pws: password
      * @maxNumRedirect:  maximum number of the redirects allowed
      */
-    @SuppressWarnings("resource")
     public static void downloadWithCred(URL url, File localFile, String un, String pw, int maxNumRedirect) throws IOException
     {
         CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
@@ -126,7 +137,13 @@ public final class DownloadUtils {
 
         String encoding = new sun.misc.BASE64Encoder().encode (new String(un+ ":"+pw).getBytes());
 
-        HttpURLConnection con = (HttpURLConnection) u.openConnection();
+        HttpURLConnection con = null;
+
+        if (u.getProtocol().equalsIgnoreCase("https")){
+            con = (HttpsURLConnection)u.openConnection();
+        } else {
+            con = (HttpURLConnection) u.openConnection();
+        }
         con.setRequestProperty("Authorization", "basic " + encoding);
         con.setInstanceFollowRedirects(false);
         int code = con.getResponseCode();
@@ -136,7 +153,11 @@ public final class DownloadUtils {
         while ((code >= 300) && (code<400) && (maxd >0)) //redirect
         {
             u = new URL(con.getHeaderField("Location"));
-            con = (HttpURLConnection) u.openConnection();
+            if (u.getProtocol().equalsIgnoreCase("https")){
+                con = (HttpsURLConnection)u.openConnection();
+            } else {
+                con = (HttpURLConnection) u.openConnection();
+            }
             con.setRequestProperty("Authorization", "basic " + encoding);
             con.setInstanceFollowRedirects(false);
             con.setUseCaches(true);

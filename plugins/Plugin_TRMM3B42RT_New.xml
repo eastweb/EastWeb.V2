@@ -10,7 +10,7 @@
 		<DownloadFactoryClassName>TRMM3B42RT_NewFactory</DownloadFactoryClassName>
 		<Mode>http</Mode>
 		<HTTP>
-			<URL>http://disc2.gesdisc.eosdis.nasa.gov/data/TRMM_RT/TRMM_3B42RT_Daily.7/</URL>
+			<URL>https://disc2.gesdisc.eosdis.nasa.gov/data/TRMM_RT/TRMM_3B42RT_Daily.7/</URL>
 		</HTTP>
 		
 		<TimeZone>CST6CDT</TimeZone>
