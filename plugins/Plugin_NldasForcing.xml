@@ -8,17 +8,21 @@
 	<ExtraDownloadFiles/>
 	<Download>
 		<DownloadFactoryClassName>NldasForcingFactory</DownloadFactoryClassName>
-		<Mode>ftp</Mode>
-		<FTP>
-			<HostName>hydro1.sci.gsfc.nasa.gov</HostName>
-			<RootDir>/data/s4pa/NLDAS/NLDAS_FORA0125_H.002/</RootDir>
-			<UserName>anonymous</UserName>
-			<PassWord>anonymous</PassWord>
-		</FTP>
+<!-- 		<Mode>ftp</Mode> -->
+<!-- 		<FTP> -->
+<!-- 			<HostName>hydro1.sci.gsfc.nasa.gov</HostName> -->
+<!-- 			<RootDir>/data/s4pa/NLDAS/NLDAS_FORA0125_H.002/</RootDir> -->
+<!-- 			<UserName>anonymous</UserName> -->
+<!-- 			<PassWord>anonymous</PassWord> -->
+<!-- 		</FTP> -->
+		<Mode>http</Mode>
+		<HTTP>
+			<URL>https://hydro1.gesdisc.eosdis.nasa.gov/data/s4pa/NLDAS/NLDAS_FORA0125_H.002/</URL>
+		</HTTP>
 		<TimeZone>CST6CDT</TimeZone>
 		<FilesPerDay>24</FilesPerDay>
 		<DatePattern>\d{4}</DatePattern>
-		<FileNamePattern>NLDAS_FORA0125_H\.A(\d{4})(\d{4})(\d{4}).(\d{4})00\.002\.grb</FileNamePattern>
+		<FileNamePattern>NLDAS_FORA0125_H\.A(\d{4})(\d{2})(\d{2}).(\d{2})00\.002\.grb</FileNamePattern>
 		<OriginDate>
 			<DayOfMonth>01</DayOfMonth>
 			<Month>January</Month>
@@ -30,16 +34,24 @@
 		<ProcessStep>NldasForcingReproject</ProcessStep>
 		<ProcessStep>NldasForcingMask</ProcessStep>
 		<ProcessStep>NldasForcingClip</ProcessStep>
-		<NumberOfOutput>7</NumberOfOutput>
+		<NumberOfOutput>15</NumberOfOutput>
 	</Processor>
 	<Indices>
 		<ClassName>NldasForcingHeatingDegreeDays</ClassName>
 		<ClassName>NldasForcingFreezingDegreeDays</ClassName>
+		<ClassName>NldasForcingLymeDiseaseIndex</ClassName>
 		<ClassName>NldasForcingMinAirTemperature</ClassName>
 		<ClassName>NldasForcingMeanAirTemperature</ClassName>
 		<ClassName>NldasForcingMaxAirTemperature</ClassName>
+		<ClassName>NldasForcingMeanHeatIndex</ClassName>
+		<ClassName>NldasForcingMaxHeatIndex</ClassName>
+		<ClassName>NldasForcingMeanWindspeed</ClassName>
+		<ClassName>NldasForcingMaxWindspeed</ClassName>
 		<ClassName>NldasForcingMeanHumidity</ClassName>
+		<ClassName>NldasForcingMeanRelativeHumidity</ClassName>
+		<ClassName>NldasForcingOverwinteringIndex</ClassName>
 		<ClassName>NldasForcingTotalPrecipitation</ClassName>
+		<ClassName>NldasForcingWNVAmplificationIndex</ClassName>
 	</Indices>
 	<Summary>
 		<Temporal>
