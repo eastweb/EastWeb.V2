@@ -262,7 +262,7 @@ public class NldasForcingComposite extends Composite
                         {
                             RHArray[i] = 100 * 0.263 * pressureArray[i] * inputArray[i] * (1 / (Math.exp(17.67 * (tempArray[i] - 273.15) / (tempArray[i] - 29.75))));
 
-                            if(tempArray[i] > 20)
+                            if(tempArray[i] > 20 && tempArray[i] != 9999.0)
                             {
                                 HIArray[i] = -8.784695 + 1.61139411 * tempArray[i] + 2.338549 * RHArray[i]
                                         - 0.14611605 * tempArray[i] * RHArray[i] - 0.012308094 * (tempArray[i] * tempArray[i])
@@ -277,7 +277,7 @@ public class NldasForcingComposite extends Composite
 
                             if(prefix.equalsIgnoreCase("Max_Heat_Index"))
                             {
-                                if(HIArray[i] > maxVal) {
+                                if(HIArray[i] > maxVal && HIArray[i] != 9999.0) {
                                     maxVal = HIArray[i];
                                 }
 
@@ -311,7 +311,7 @@ public class NldasForcingComposite extends Composite
             {
                 double[] VArray = new double[rasterX * rasterY];
 
-                double maxVal = 0;
+                double maxVal = 0.0;
 
                 for (Dataset inputDS : inputDSs)
                 {
@@ -320,9 +320,13 @@ public class NldasForcingComposite extends Composite
 
                     for (int i = 0; i < inputArray.length; i++)
                     {
-                        outputArray[i] = Math.sqrt((inputArray[i] * inputArray[i]) + (VArray[i] * VArray[i]));
-                        if(outputArray[i] > maxVal) {
-                            maxVal = outputArray[i];
+                        if(outputArray[i] != 9999.0)
+                        {
+                            outputArray[i] = Math.sqrt((inputArray[i] * inputArray[i]) + (VArray[i] * VArray[i]));
+                            if(outputArray[i] > maxVal) {
+                                maxVal = outputArray[i];
+                            }
+
                         }
 
                         outputArray[i] = maxVal;

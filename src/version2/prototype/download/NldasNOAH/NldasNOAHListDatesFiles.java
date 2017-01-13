@@ -101,6 +101,11 @@ public class NldasNOAHListDatesFiles extends ListDatesFiles{
 
                                                 for(String paramF : availableFiles)
                                                 {
+                                                    if(availableFiles.size() < 94)
+                                                    {
+                                                        break;
+                                                    }
+
                                                     Pattern patternF = Pattern.compile("NLDAS_NOAH0125_H\\.A(\\d{4})(\\d{2})(\\d{2})\\.(\\d{4})\\.002\\.grb");
                                                     Matcher matcherF = patternF.matcher(paramF);
 
