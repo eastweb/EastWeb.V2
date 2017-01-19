@@ -25,6 +25,8 @@ public class NldasForcingComposite extends Composite
     private static MonthDay fDate;
     private static double fDegree;
 
+    private static DataDate sDate;
+
     private int[] mBands;
 
     private Integer noDataValue;
@@ -39,6 +41,8 @@ public class NldasForcingComposite extends Composite
 
         fDate = data.getFreezingDate();
         fDegree = data.getFreezingDegree();
+
+        sDate = data.getDateDate();
 
         noDataValue = data.getNoDataValue();
     }
@@ -68,8 +72,16 @@ public class NldasForcingComposite extends Composite
                 int outputs = 1;
 
                 if(band == 1) {
-                    // Used to differentiate Min--Mean/DegreeDays--Max Air Temp
+                    // Used to differentiate Min--Mean/DegreeDays--Max Air Temp--other
                     outputs = 3;
+                }
+                else if (band == 2)
+                {
+                    outputs = 2;
+                }
+                else if(band == 4)
+                {
+                    outputs = 2;
                 }
 
                 for(int output = 0; output < outputs; output++)
@@ -122,6 +134,9 @@ public class NldasForcingComposite extends Composite
             else if(output == 1) {
                 prefixList.add("HeatingDegreeDays");
                 prefixList.add("FreezingDegreeDays");
+                prefixList.add("WNVAmplificationIndex");
+                prefixList.add("LymeDiseaseIndex");
+                prefixList.add("OverwinteringIndex");
                 prefix = "AirTemp_Mean";
             }
             else if(output == 2) {
@@ -129,7 +144,28 @@ public class NldasForcingComposite extends Composite
             }
         }
         else if (band == 2) {
-            prefix = "Humidity_Mean";
+            if(output == 0)
+            {
+                prefix = "Humidity_Mean";
+            }
+            else if(output == 1)
+            {
+                prefixList.add("Max_Heat_Index");
+                prefixList.add("Mean_Heat_Index");
+                prefix = "Relative_Humidity_Mean";
+            }
+        }
+        else if (band == 4)
+        {
+            if(output == 0)
+            {
+                prefix = "Max_Windspeed";
+            }
+            else if (output == 1)
+            {
+                prefix = "Mean_Windspeed";
+            }
+
         }
         else if (band == 10) {
             prefix = "Precip_Total";
@@ -144,7 +180,7 @@ public class NldasForcingComposite extends Composite
         double[] inputArray = new double[rasterX * rasterY];
         double[] outputArray = new double[rasterX * rasterY];
 
-        if ((band == 1 && output == 1) || band == 2)
+        if ((band == 1 && output == 1) || (band == 2 && output == 0))
         {
             // Always take the average.
             for (Dataset inputDS : inputDSs)
@@ -171,7 +207,23 @@ public class NldasForcingComposite extends Composite
                 else if (prefix.equalsIgnoreCase("FreezingDegreeDays")) {
                     outputArray = GetCumulativeFreezingDegreeDays(outputArray, prefix);
                 }
+                else if (prefix.equalsIgnoreCase("WNVAmplificationIndex"))
+                {
+                    outputArray = GetCumulativeWNVAmpDays(outputArray, prefix);
+                }
+                else if (prefix.equalsIgnoreCase("LymeDiseaseIndex"))
+                {
+                    outputArray = GetCumulativeLymeDiseaseDays(outputArray, prefix);
+                }
+                else if (prefix.equalsIgnoreCase("OverwinteringIndex"))
+                {
+                    outputArray = GetCumulativeOverwinteringDays(outputArray, prefix);
+                }
             }
+        }
+        else if((band == 1 && output == 3))
+        {
+
         }
         else if(band == 1)
         {
@@ -180,6 +232,123 @@ public class NldasForcingComposite extends Composite
             }
             else if(output == 2) {
                 outputArray = FindMaxValues(inputDSs, rasterX, rasterY);
+            }
+        }
+        else if(band == 2)
+        {
+
+            if (output == 1)
+            {
+                double[] RHArray = new double[rasterX * rasterY];
+                double[] HIArray = new double[rasterX * rasterY];
+                double[] MxArray = new double[rasterX * rasterY];
+                double[] MnArray = new double[rasterX * rasterY];
+                double[] pressureArray = new double[rasterX * rasterY];
+                double[] tempArray = new double[rasterX * rasterY];
+
+                double maxVal = 0;
+
+                for (Dataset inputDS : inputDSs)
+                {
+                    inputDS.GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArray);
+                    inputDS.GetRasterBand(3).ReadRaster(0, 0, rasterX, rasterY, pressureArray);
+                    inputDS.GetRasterBand(1).ReadRaster(0, 0, rasterX, rasterY, tempArray);
+
+                    for (int i = 0; i < inputArray.length; i++)
+                    {
+                        outputArray[i] += ((100 * 0.263 * pressureArray[i] * inputArray[i] * (1 / (Math.exp(17.67 * (tempArray[i] - 273.15) / (tempArray[i] - 29.75))))) / inputDSs.size());
+
+                        if(prefix.equalsIgnoreCase("Max_Heat_Index") || prefix.equalsIgnoreCase("Mean_Heat_Index"))
+                        {
+                            RHArray[i] = 100 * 0.263 * pressureArray[i] * inputArray[i] * (1 / (Math.exp(17.67 * (tempArray[i] - 273.15) / (tempArray[i] - 29.75))));
+
+                            if(tempArray[i] > 20 && tempArray[i] != 9999.0)
+                            {
+                                HIArray[i] = -8.784695 + 1.61139411 * tempArray[i] + 2.338549 * RHArray[i]
+                                        - 0.14611605 * tempArray[i] * RHArray[i] - 0.012308094 * (tempArray[i] * tempArray[i])
+                                        - 0.016424828 * (RHArray[i] * RHArray[i]) + 0.02211732 * (tempArray[i] * tempArray[i])
+                                        * RHArray[i] + 0.00072546 * tempArray[i] * (RHArray[i] * RHArray[i]) - 0.000003582
+                                        * (tempArray[i] * tempArray[i]) * (RHArray[i] * RHArray[i]);
+                            }
+                            else
+                            {
+                                HIArray[i] = tempArray[i];
+                            }
+
+                            if(prefix.equalsIgnoreCase("Max_Heat_Index"))
+                            {
+                                if(HIArray[i] > maxVal && HIArray[i] != 9999.0) {
+                                    maxVal = HIArray[i];
+                                }
+
+                                MxArray[i] = maxVal;
+                            }
+                            else if (prefix.equalsIgnoreCase("Mean_Heat_Index"))
+                            {
+                                MnArray[i] += (HIArray[i] / inputDSs.size());
+                            }
+                        }
+
+                    }
+
+
+                    if(prefix.equalsIgnoreCase("Max_Heat_Index"))
+                    {
+                        outputArray = MxArray;
+                    }
+                    else if (prefix.equalsIgnoreCase("Mean_Heat_Index"))
+                    {
+                        outputArray = MnArray;
+                    }
+                }
+
+            }
+
+        }
+        else if (band == 4)
+        {
+            if(output == 0)
+            {
+                double[] VArray = new double[rasterX * rasterY];
+
+                double maxVal = 0.0;
+
+                for (Dataset inputDS : inputDSs)
+                {
+                    inputDS.GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArray);
+                    inputDS.GetRasterBand(5).ReadRaster(0, 0, rasterX, rasterY, VArray);
+
+                    for (int i = 0; i < inputArray.length; i++)
+                    {
+                        if(outputArray[i] != 9999.0)
+                        {
+                            outputArray[i] = Math.sqrt((inputArray[i] * inputArray[i]) + (VArray[i] * VArray[i]));
+                            if(outputArray[i] > maxVal) {
+                                maxVal = outputArray[i];
+                            }
+
+                        }
+
+                        outputArray[i] = maxVal;
+
+                    }
+
+                }
+            }
+            else if (output == 1)
+            {
+                double[] VArray = new double[rasterX * rasterY];
+
+                for (Dataset inputDS : inputDSs)
+                {
+                    inputDS.GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArray);
+                    inputDS.GetRasterBand(5).ReadRaster(0, 0, rasterX, rasterY, VArray);
+
+                    for (int i = 0; i < inputArray.length; i++)
+                    {
+                        outputArray[i] += ((Math.sqrt((inputArray[i] * inputArray[i]) + (VArray[i] * VArray[i])))/ inputDSs.size());
+                    }
+                }
             }
         }
         else if(band == 10)
@@ -293,6 +462,84 @@ public class NldasForcingComposite extends Composite
             // Fill value is 9999.0
             if(meanValues[i] != 9999.0 && meanValues[i] < fDegree) {
                 meanValues[i] = previousVal + (fDegree - meanValues[i]);
+            } else {
+                meanValues[i] = previousVal;
+            }
+        }
+
+        return meanValues;
+    }
+
+    private double[] GetCumulativeWNVAmpDays(double[] meanValues, String prefix)
+    {
+        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(sDate.getMonth(), sDate.getDay()));
+        double degree = 14.3;
+
+        for(int i = 0; i < meanValues.length; i++)
+        {
+            double previousVal = 0.0;
+            if(cumulative != null) {
+                previousVal = cumulative[i];
+            }
+
+            // Fill value is 9999.0
+            if(meanValues[i] != 9999.0 && meanValues[i] > degree) {
+                meanValues[i] = previousVal + (meanValues[i] - degree);
+            } else {
+                meanValues[i] = previousVal;
+            }
+        }
+
+        return meanValues;
+    }
+
+    private double[] GetCumulativeLymeDiseaseDays(double[] meanValues, String prefix)
+    {
+        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(sDate.getMonth(), sDate.getDay()));
+        double degree = 0.0;
+
+        for(int i = 0; i < meanValues.length; i++)
+        {
+            double previousVal = 0.0;
+            if(cumulative != null) {
+                previousVal = cumulative[i];
+            }
+
+            // Fill value is 9999.0
+            if(meanValues[i] != 9999.0 && meanValues[i] > degree) {
+                meanValues[i] = previousVal + (meanValues[i] - degree);
+            } else {
+                meanValues[i] = previousVal;
+            }
+        }
+
+        return meanValues;
+    }
+
+    private double[] GetCumulativeOverwinteringDays(double[] meanValues, String prefix)
+    {
+        double[] cumulative;
+        double degree = 0.0;
+
+        if(sDate.getMonth() < 7)
+        {
+            cumulative = GetPreviousValues(prefix, MonthDay.of(7, 1));
+        }
+        else
+        {
+            cumulative = GetPreviousValues(prefix, MonthDay.of(sDate.getMonth(), sDate.getDay()));
+        }
+
+        for(int i = 0; i < meanValues.length; i++)
+        {
+            double previousVal = 0.0;
+            if(cumulative != null) {
+                previousVal = cumulative[i];
+            }
+
+            // Fill value is 9999.0
+            if(meanValues[i] != 9999.0 && meanValues[i] < degree) {
+                meanValues[i] = previousVal + (degree - meanValues[i]);
             } else {
                 meanValues[i] = previousVal;
             }

@@ -8,13 +8,17 @@
 	<ExtraDownloadFiles/>
 	<Download>
 		<DownloadFactoryClassName>NldasNOAHFactory</DownloadFactoryClassName>
-		<Mode>ftp</Mode>
-		<FTP>
-			<HostName>hydro1.sci.gsfc.nasa.gov</HostName>
-			<RootDir>/data/s4pa/NLDAS/NLDAS_NOAH0125_H.002</RootDir>
-			<UserName>anonymous</UserName>
-			<PassWord>anonymous</PassWord>
-		</FTP>
+<!-- 		<Mode>ftp</Mode> -->
+<!-- 		<FTP> -->
+<!-- 			<HostName>hydro1.sci.gsfc.nasa.gov</HostName> -->
+<!-- 			<RootDir>/data/s4pa/NLDAS/NLDAS_NOAH0125_H.002</RootDir> -->
+<!-- 			<UserName>anonymous</UserName> -->
+<!-- 			<PassWord>anonymous</PassWord> -->
+<!-- 		</FTP> -->
+		<Mode>http</Mode>
+		<HTTP>
+			<URL>https://hydro1.gesdisc.eosdis.nasa.gov/data/NLDAS/NLDAS_NOAH0125_H.002/</URL>
+		</HTTP>
 		<TimeZone>CST6CDT</TimeZone>
 		<FilesPerDay>24</FilesPerDay>
 		<DatePattern>\d{4}</DatePattern>
