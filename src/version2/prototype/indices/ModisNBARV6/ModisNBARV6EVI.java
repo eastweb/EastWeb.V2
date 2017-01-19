@@ -66,13 +66,13 @@ public class ModisNBARV6EVI extends IndicesFramework
     }
 
     /**
-     * Valid input value range: 0 to 32766
+     * Valid input value range: 1 to 32766
      * Possible output value range: -163800.0 to 163770.0
      * Valid output value range: valid range is suspected to be near the same as possible output range
      */
     @Override
     protected double calculatePixelValue(double[] values) throws Exception {
-        if (values[NIR] > 32766 || values[NIR] < 0 || values[RED] > 32766 || values[RED] < 0 || values[BLUE] > 32766 || values[BLUE] < 0 ||
+        if (values[NIR] > 32766 || values[NIR] < 1 || values[RED] > 32766 || values[RED] < 1 || values[BLUE] > 32766 || values[BLUE] < 1 ||
                 values[NIR] == noDataValue || values[RED] == noDataValue || values[BLUE] == noDataValue) {
             //            return -3.40282346639e+038;
             return noDataValue;

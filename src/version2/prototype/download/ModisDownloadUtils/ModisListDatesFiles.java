@@ -62,6 +62,7 @@ public class ModisListDatesFiles extends ListDatesFiles
         try
         {
             ByteArrayOutputStream folderOutStream = new ByteArrayOutputStream();
+
             DownloadUtils.downloadToStream(new URL(mHostURL), folderOutStream);
 
             List<String> availableDates = Arrays.asList(folderOutStream.toString().split("[\\r\\n]+"));

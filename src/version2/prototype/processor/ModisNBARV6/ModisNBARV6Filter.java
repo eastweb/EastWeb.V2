@@ -100,6 +100,7 @@ public class ModisNBARV6Filter extends Filter{
                       Low (QA flag = 0,1,or 2)
                       NoScreening (QA flag = 0,1,2,or 3)
                      */
+
                     switch (qcLevel)
                     {
                     case "NoScreening (QA flag = 0,1,2,or 3)":
@@ -122,6 +123,10 @@ public class ModisNBARV6Filter extends Filter{
                             data[k] = noDataValue;
                         }
                         break;
+                    }
+                    // < 1 or > 32766 is no data value
+                    if ((data[k] < 1) || (data[k] > 32766)) {
+                        data[k] = noDataValue;
                     }
                 }
 
