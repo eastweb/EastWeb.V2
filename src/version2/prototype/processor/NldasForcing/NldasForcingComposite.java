@@ -180,6 +180,8 @@ public class NldasForcingComposite extends Composite
         double[] inputArray = new double[rasterX * rasterY];
         double[] outputArray = new double[rasterX * rasterY];
 
+        // AirTemp_Mean, Humidity Mean
+        //HeatingDegreeDays, FreezingDegreeDays, WNVAmplificationIndex, LymeDiseaseIndex, OverwinteringIndex
         if ((band == 1 && output == 1) || (band == 2 && output == 0))
         {
             // Always take the average.
@@ -221,10 +223,7 @@ public class NldasForcingComposite extends Composite
                 }
             }
         }
-        else if((band == 1 && output == 3))
-        {
-
-        }
+        //AirTemp_Min, AirTemp_Max
         else if(band == 1)
         {
             if(output == 0) {
@@ -234,6 +233,7 @@ public class NldasForcingComposite extends Composite
                 outputArray = FindMaxValues(inputDSs, rasterX, rasterY);
             }
         }
+        //Max_Heat_Index, Mean_Heat_Index, Relative_Humidity_Mean
         else if(band == 2)
         {
 
@@ -305,6 +305,7 @@ public class NldasForcingComposite extends Composite
             }
 
         }
+        //Max_Windspeedd, Mean_Windspeed
         else if (band == 4)
         {
             if(output == 0)
@@ -351,6 +352,7 @@ public class NldasForcingComposite extends Composite
                 }
             }
         }
+        //Precip_Total
         else if(band == 10)
         {
             for (Dataset inputDS : inputDSs) {
