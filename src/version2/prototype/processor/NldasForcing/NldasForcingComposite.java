@@ -194,6 +194,14 @@ public class NldasForcingComposite extends Composite
                 }
             }
 
+            for (int i = 0; i < outputArray.length; i++) {
+
+                if(outputArray[i] == 0.0) {
+
+                    outputArray[i] = 9999.0;
+                }
+            }
+
             if(band == 1)
             {
                 // Convert the values from Kelvin to Celsius
@@ -264,7 +272,18 @@ public class NldasForcingComposite extends Composite
                     // No conversion necessary because the
                     // density of water is approximately 1000 kg/m^3,
                     // so the total mass of a 1-mm layer of water covering an area of 1 m^2 is 1 kg.
-                    outputArray[i] += inputArray[i];
+                    if(inputArray[i] != 9999.0)
+                    {
+                        outputArray[i] += inputArray[i];
+                    }
+                }
+            }
+
+            for (int i = 0; i < outputArray.length; i++) {
+
+                if(outputArray[i] == 0.0) {
+
+                    outputArray[i] = 9999.0;
                 }
             }
         }
@@ -423,6 +442,14 @@ public class NldasForcingComposite extends Composite
                     }
                 }
             }
+
+            for (int i = 0; i < outputArray.length; i++) {
+
+                if(outputArray[i] == 0.0) {
+
+                    outputArray[i] = 9999.0;
+                }
+            }
         }
         else
         {
@@ -435,7 +462,16 @@ public class NldasForcingComposite extends Composite
                     }
                 }
             }
+
+            for (int i = 0; i < outputArray.length; i++) {
+
+                if(outputArray[i] == 0.0) {
+
+                    outputArray[i] = 9999.0;
+                }
+            }
         }
+
 
         return outputArray;
     }
@@ -489,7 +525,16 @@ public class NldasForcingComposite extends Composite
                     }
                 }
             }
+
+            for (int i = 0; i < outputArray.length; i++) {
+
+                if(outputArray[i] == 0.0) {
+
+                    outputArray[i] = 9999.0;
+                }
+            }
         }
+
 
         return outputArray;
     }
