@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.MonthDay;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.gdal.gdal.Dataset;
@@ -25,8 +26,6 @@ public class NldasForcingComposite extends Composite
     private static MonthDay fDate;
     private static double fDegree;
 
-    private static DataDate sDate;
-
     private int[] mBands;
 
     private Integer noDataValue;
@@ -41,8 +40,6 @@ public class NldasForcingComposite extends Composite
 
         fDate = data.getFreezingDate();
         fDegree = data.getFreezingDegree();
-
-        sDate = data.getDateDate();
 
         noDataValue = data.getNoDataValue();
     }
@@ -76,10 +73,6 @@ public class NldasForcingComposite extends Composite
                     outputs = 3;
                 }
                 else if (band == 2)
-                {
-                    outputs = 2;
-                }
-                else if(band == 4)
                 {
                     outputs = 2;
                 }
@@ -157,14 +150,8 @@ public class NldasForcingComposite extends Composite
         }
         else if (band == 4)
         {
-            if(output == 0)
-            {
-                prefix = "Max_Windspeed";
-            }
-            else if (output == 1)
-            {
-                prefix = "Mean_Windspeed";
-            }
+            prefixList.add("Max_Windspeed");
+            prefix = "Mean_Windspeed";
 
         }
         else if (band == 10) {
@@ -177,21 +164,38 @@ public class NldasForcingComposite extends Composite
 
     private double[] GetOutputArray(int band, int output, List<Dataset> inputDSs, int rasterX, int rasterY, String prefix)
     {
-        double[] inputArray = new double[rasterX * rasterY];
+        int size = inputDSs.size();
+        double[][] inputArrays = new double[size][rasterX * rasterY];
         double[] outputArray = new double[rasterX * rasterY];
+        int length = outputArray.length;
+        double sum;
 
+        Arrays.fill(outputArray, 9999.0);
+
+        // AirTemp_Mean, Humidity Mean
+        //HeatingDegreeDays, FreezingDegreeDays, WNVAmplificationIndex, LymeDiseaseIndex, OverwinteringIndex
         if ((band == 1 && output == 1) || (band == 2 && output == 0))
         {
-            // Always take the average.
-            for (Dataset inputDS : inputDSs)
+            for(int index = 0; index < size; index++)
             {
-                inputDS.GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArray);
+                inputDSs.get(index).GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArrays[index]);
+            }
 
-                for (int i = 0; i < inputArray.length; i++) {
+            // Always take the average
+            for(int pos = 0; pos < length; pos++)
+            {
+                sum = 0.0;
+                for (int i = 0; i < size; i++)
+                {
                     // Get the proportional average for each input.
-                    outputArray[i] += (inputArray[i] / inputDSs.size());
+                    if(inputArrays[i][pos] != 9999.0)
+                    {
+                        outputArray[pos] = sum + (inputArrays[i][pos]/size);
+                        sum = outputArray[pos];
+                    }
                 }
             }
+
 
             if(band == 1)
             {
@@ -221,10 +225,7 @@ public class NldasForcingComposite extends Composite
                 }
             }
         }
-        else if((band == 1 && output == 3))
-        {
-
-        }
+        //AirTemp_Min, AirTemp_Max
         else if(band == 1)
         {
             if(output == 0) {
@@ -234,133 +235,38 @@ public class NldasForcingComposite extends Composite
                 outputArray = FindMaxValues(inputDSs, rasterX, rasterY);
             }
         }
+        //Max_Heat_Index, Mean_Heat_Index, Relative_Humidity_Mean
         else if(band == 2)
         {
-
-            if (output == 1)
-            {
-                double[] RHArray = new double[rasterX * rasterY];
-                double[] HIArray = new double[rasterX * rasterY];
-                double[] MxArray = new double[rasterX * rasterY];
-                double[] MnArray = new double[rasterX * rasterY];
-                double[] pressureArray = new double[rasterX * rasterY];
-                double[] tempArray = new double[rasterX * rasterY];
-
-                double maxVal = 0;
-
-                for (Dataset inputDS : inputDSs)
-                {
-                    inputDS.GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArray);
-                    inputDS.GetRasterBand(3).ReadRaster(0, 0, rasterX, rasterY, pressureArray);
-                    inputDS.GetRasterBand(1).ReadRaster(0, 0, rasterX, rasterY, tempArray);
-
-                    for (int i = 0; i < inputArray.length; i++)
-                    {
-                        outputArray[i] += ((100 * 0.263 * pressureArray[i] * inputArray[i] * (1 / (Math.exp(17.67 * (tempArray[i] - 273.15) / (tempArray[i] - 29.75))))) / inputDSs.size());
-
-                        if(prefix.equalsIgnoreCase("Max_Heat_Index") || prefix.equalsIgnoreCase("Mean_Heat_Index"))
-                        {
-                            RHArray[i] = 100 * 0.263 * pressureArray[i] * inputArray[i] * (1 / (Math.exp(17.67 * (tempArray[i] - 273.15) / (tempArray[i] - 29.75))));
-
-                            if(tempArray[i] > 20 && tempArray[i] != 9999.0)
-                            {
-                                HIArray[i] = -8.784695 + 1.61139411 * tempArray[i] + 2.338549 * RHArray[i]
-                                        - 0.14611605 * tempArray[i] * RHArray[i] - 0.012308094 * (tempArray[i] * tempArray[i])
-                                        - 0.016424828 * (RHArray[i] * RHArray[i]) + 0.02211732 * (tempArray[i] * tempArray[i])
-                                        * RHArray[i] + 0.00072546 * tempArray[i] * (RHArray[i] * RHArray[i]) - 0.000003582
-                                        * (tempArray[i] * tempArray[i]) * (RHArray[i] * RHArray[i]);
-                            }
-                            else
-                            {
-                                HIArray[i] = tempArray[i];
-                            }
-
-                            if(prefix.equalsIgnoreCase("Max_Heat_Index"))
-                            {
-                                if(HIArray[i] > maxVal && HIArray[i] != 9999.0) {
-                                    maxVal = HIArray[i];
-                                }
-
-                                MxArray[i] = maxVal;
-                            }
-                            else if (prefix.equalsIgnoreCase("Mean_Heat_Index"))
-                            {
-                                MnArray[i] += (HIArray[i] / inputDSs.size());
-                            }
-                        }
-
-                    }
-
-
-                    if(prefix.equalsIgnoreCase("Max_Heat_Index"))
-                    {
-                        outputArray = MxArray;
-                    }
-                    else if (prefix.equalsIgnoreCase("Mean_Heat_Index"))
-                    {
-                        outputArray = MnArray;
-                    }
-                }
-
-            }
-
+            outputArray = FindRelativeHumidity(inputDSs, rasterX, rasterY, prefix);
         }
+        //Max_Windspeedd, Mean_Windspeed
         else if (band == 4)
         {
-            if(output == 0)
-            {
-                double[] VArray = new double[rasterX * rasterY];
-
-                double maxVal = 0.0;
-
-                for (Dataset inputDS : inputDSs)
-                {
-                    inputDS.GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArray);
-                    inputDS.GetRasterBand(5).ReadRaster(0, 0, rasterX, rasterY, VArray);
-
-                    for (int i = 0; i < inputArray.length; i++)
-                    {
-                        if(outputArray[i] != 9999.0)
-                        {
-                            outputArray[i] = Math.sqrt((inputArray[i] * inputArray[i]) + (VArray[i] * VArray[i]));
-                            if(outputArray[i] > maxVal) {
-                                maxVal = outputArray[i];
-                            }
-
-                        }
-
-                        outputArray[i] = maxVal;
-
-                    }
-
-                }
-            }
-            else if (output == 1)
-            {
-                double[] VArray = new double[rasterX * rasterY];
-
-                for (Dataset inputDS : inputDSs)
-                {
-                    inputDS.GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArray);
-                    inputDS.GetRasterBand(5).ReadRaster(0, 0, rasterX, rasterY, VArray);
-
-                    for (int i = 0; i < inputArray.length; i++)
-                    {
-                        outputArray[i] += ((Math.sqrt((inputArray[i] * inputArray[i]) + (VArray[i] * VArray[i])))/ inputDSs.size());
-                    }
-                }
-            }
+            outputArray = FindWindspeed(inputDSs, rasterX, rasterY, prefix);
         }
+        //Precip_Total
         else if(band == 10)
         {
-            for (Dataset inputDS : inputDSs) {
-                inputDS.GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArray);
-                for (int i=0; i < inputArray.length; i++) {
-                    // band 10 == precipitation hourly total, so we don't want the average but rather the total
-                    // No conversion necessary because the
-                    // density of water is approximately 1000 kg/m^3,
-                    // so the total mass of a 1-mm layer of water covering an area of 1 m^2 is 1 kg.
-                    outputArray[i] += inputArray[i];
+            for(int index = 0; index < size; index++)
+            {
+                inputDSs.get(index).GetRasterBand(band).ReadRaster(0, 0, rasterX, rasterY, inputArrays[index]);
+            }
+
+            for(int pos = 0; pos < length; pos++)
+            {
+                // band 10 == precipitation hourly total, so we don't want the average but rather the total
+                // No conversion necessary because the
+                // density of water is approximately 1000 kg/m^3,
+                // so the total mass of a 1-mm layer of water covering an area of 1 m^2 is 1 kg.
+                sum = 0.0;
+                for (int i = 0; i < size; i++)
+                {
+                    if(inputArrays[i][pos] != 9999.0)
+                    {
+                        outputArray[pos] = sum + inputArrays[i][pos];
+                        sum = outputArray[pos];
+                    }
                 }
             }
         }
@@ -370,17 +276,21 @@ public class NldasForcingComposite extends Composite
 
     private double[] FindMinValues(List<Dataset> inputDSs, int rasterX, int rasterY)
     {
-        double[][] inputArrays = new double[inputDSs.size()][rasterX * rasterY];
+        int size = inputDSs.size();
+        double[][] inputArrays = new double[size][rasterX * rasterY];
         double[] outputArray = new double[rasterX * rasterY];
+        int length = outputArray.length;
 
-        for(int index = 0; index < inputDSs.size(); index++) {
+        Arrays.fill(outputArray, 9999.0);
+
+        for(int index = 0; index < size; index++) {
             inputDSs.get(index).GetRasterBand(1).ReadRaster(0, 0, rasterX, rasterY, inputArrays[index]);
         }
 
-        for(int pos = 0; pos < outputArray.length; pos++)
+        for(int pos = 0; pos < length; pos++)
         {
             double minVal = inputArrays[0][pos];
-            for (int i = 0; i < inputDSs.size(); i++) {
+            for (int i = 0; i < size; i++) {
                 // Fill value is 9999.0
                 if(inputArrays[i][pos] != 9999.0 && inputArrays[i][pos] < minVal) {
                     minVal = inputArrays[i][pos];
@@ -399,17 +309,21 @@ public class NldasForcingComposite extends Composite
 
     private double[] FindMaxValues(List<Dataset> inputDSs, int rasterX, int rasterY)
     {
-        double[][] inputArrays = new double[inputDSs.size()][rasterX * rasterY];
+        int size = inputDSs.size();
+        double[][] inputArrays = new double[size][rasterX * rasterY];
         double[] outputArray = new double[rasterX * rasterY];
+        int length = outputArray.length;
 
-        for(int index = 0; index < inputDSs.size(); index++) {
+        Arrays.fill(outputArray, 9999.0);
+
+        for(int index = 0; index < size; index++) {
             inputDSs.get(index).GetRasterBand(1).ReadRaster(0, 0, rasterX, rasterY, inputArrays[index]);
         }
 
-        for(int pos = 0; pos < outputArray.length; pos++)
+        for(int pos = 0; pos < length; pos++)
         {
             double maxVal = inputArrays[0][pos];
-            for (int i = 0; i < inputDSs.size(); i++) {
+            for (int i = 0; i < size; i++) {
                 // Fill value is 9999.
                 if(inputArrays[i][pos] != 9999.0 && inputArrays[i][pos] > maxVal) {
                     maxVal = inputArrays[i][pos];
@@ -426,11 +340,197 @@ public class NldasForcingComposite extends Composite
         return outputArray;
     }
 
+    private double [] FindRelativeHumidity(List<Dataset> inputDSs, int rasterX, int rasterY, String prefix)
+    {
+        int size = inputDSs.size();
+        double[][] PArrays = new double[size][rasterX * rasterY];
+        double[][] TArrays = new double[size][rasterX * rasterY];
+        double[][] SHArrays = new double[size][rasterX * rasterY];
+        double[][] RHArray = new double[size][rasterX * rasterY];
+        double[][] HIArray = new double[size][rasterX * rasterY];
+        double[] outputArray = new double[rasterX * rasterY];
+        int length = outputArray.length;
+        double sum;
+
+        Arrays.fill(outputArray, 9999.0);
+
+        for(int index = 0; index < size; index++) {
+            inputDSs.get(index).GetRasterBand(1).ReadRaster(0, 0, rasterX, rasterY, TArrays[index]);
+            inputDSs.get(index).GetRasterBand(2).ReadRaster(0, 0, rasterX, rasterY, SHArrays[index]);
+            inputDSs.get(index).GetRasterBand(3).ReadRaster(0, 0, rasterX, rasterY, PArrays[index]);
+        }
+
+        if(prefix.equalsIgnoreCase("Relative_Humidity_Mean"))
+        {
+            for(int pos = 0; pos < length; pos++)
+            {
+                for (int i = 0; i < size; i++) {
+                    if(TArrays[i][pos] != 9999.0) {
+                        TArrays[i][pos] = TArrays[i][pos] + 273.15;
+                    }
+                    else
+                    {
+                        TArrays[i][pos] = 9999.0;
+                    }
+                }
+            }
+        }
+
+        for(int pos = 0; pos < length; pos++)
+        {
+            for (int i = 0; i < size; i++) {
+                if(PArrays[i][pos] != 9999.0 && TArrays[i][pos] != 9999.0 && SHArrays[i][pos] != 9999.0) {
+                    RHArray[i][pos] =0.263 * PArrays[i][pos] * SHArrays[i][pos]
+                            * (1 / (Math.exp((17.67 * (TArrays[i][pos] - 273.15)) / (TArrays[i][pos] - 29.75))));
+                }
+                else
+                {
+                    RHArray[i][pos] = 9999.0;
+                }
+            }
+        }
+
+        if(prefix.equalsIgnoreCase("Max_Heat_Index") | prefix.equalsIgnoreCase("Mean_Heat_Index"))
+        {
+            for(int pos = 0; pos < length; pos++)
+            {
+                for (int i = 0; i < size; i++) {
+                    if(RHArray[i][pos] != 9999.0 && TArrays[i][pos] != 9999.0 && TArrays[i][pos] > 20) {
+                        HIArray[i][pos] = -8.784695 + 1.61139411 * TArrays[i][pos] + 2.338549 * RHArray[i][pos]
+                                - 0.14611605 * TArrays[i][pos] * RHArray[i][pos] - 0.012308094 * (TArrays[i][pos] * TArrays[i][pos])
+                                - 0.016424828 * (RHArray[i][pos] * RHArray[i][pos]) + 0.02211732 * (TArrays[i][pos] * TArrays[i][pos])
+                                * RHArray[i][pos] + 0.00072546 * TArrays[i][pos] * (RHArray[i][pos] * RHArray[i][pos]) - 0.000003582
+                                * (TArrays[i][pos] * TArrays[i][pos]) * (RHArray[i][pos] * RHArray[i][pos]);
+                    }
+                    else if(TArrays[i][pos] != 9999.0)
+                    {
+                        HIArray[i][pos] = TArrays[i][pos];
+                    }
+                    else
+                    {
+                        HIArray[i][pos] = 9999.0;
+                    }
+                }
+            }
+        }
+
+
+        if(prefix.equalsIgnoreCase("Max_Heat_Index"))
+        {
+            for(int pos = 0; pos < length; pos++)
+            {
+                double maxVal = HIArray[0][pos];
+                for (int i = 0; i < size; i++) {
+                    if(HIArray[i][pos] != 9999.0 && HIArray[i][pos] > maxVal) {
+                        maxVal = HIArray[i][pos];
+                    }
+                }
+                outputArray[pos] = maxVal;
+            }
+        }
+        else if(prefix.equalsIgnoreCase("Mean_Heat_Index"))
+        {
+            for(int pos = 0; pos < length; pos++)
+            {
+                sum = 0.0;
+                for (int i = 0; i < size; i++) {
+                    if(HIArray[i][pos] != 9999.0) {
+
+                        outputArray[pos] = sum + (HIArray[i][pos] /size);
+                        sum = outputArray[pos];
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            for(int pos = 0; pos < length; pos++)
+            {
+                sum = 0.0;
+                for (int i = 0; i < size; i++) {
+                    if(RHArray[i][pos] != 9999.0) {
+
+                        outputArray[pos] = sum + (RHArray[i][pos] /size);
+                        sum = outputArray[pos];
+                    }
+                }
+            }
+        }
+
+
+        return outputArray;
+    }
+
+    private double[] FindWindspeed(List<Dataset> inputDSs, int rasterX, int rasterY, String prefix)
+    {
+        int size = inputDSs.size();
+        double[][] UArrays = new double[size][rasterX * rasterY];
+        double[][] VArrays = new double[size][rasterX * rasterY];
+        double[][] calcArray = new double[size][rasterX * rasterY];
+        double[] outputArray = new double[rasterX * rasterY];
+        int length = outputArray.length;
+        double sum;
+
+        Arrays.fill(outputArray, 9999.0);
+
+        for(int index = 0; index < size; index++) {
+            inputDSs.get(index).GetRasterBand(4).ReadRaster(0, 0, rasterX, rasterY, UArrays[index]);
+            inputDSs.get(index).GetRasterBand(5).ReadRaster(0, 0, rasterX, rasterY, VArrays[index]);
+        }
+
+        for(int pos = 0; pos < length; pos++)
+        {
+            for (int i = 0; i < size; i++) {
+                if(UArrays[i][pos] != 9999.0 && VArrays[i][pos] != 9999.0) {
+                    calcArray[i][pos] = Math.sqrt((UArrays[i][pos] * UArrays[i][pos]) + (VArrays[i][pos] * VArrays[i][pos]));
+                }
+                else
+                {
+                    calcArray[i][pos] = 9999.0;
+                }
+            }
+        }
+
+        if(prefix.equalsIgnoreCase("Max_Windspeed"))
+        {
+            for(int pos = 0; pos < length; pos++)
+            {
+                double maxVal = calcArray[0][pos];
+                for (int i = 0; i < size; i++) {
+                    if(calcArray[i][pos] != 9999.0 && calcArray[i][pos] > maxVal) {
+                        maxVal = calcArray[i][pos];
+                    }
+                }
+                outputArray[pos] = maxVal;
+            }
+        }
+        else
+        {
+            for(int pos = 0; pos < length; pos++)
+            {
+                sum = 0.0;
+
+                for (int i = 0; i < size; i++) {
+                    if(calcArray[i][pos] != 9999.0) {
+
+                        outputArray[pos] = sum + (calcArray[i][pos] /size);
+                        sum = outputArray[pos];
+                    }
+                }
+            }
+        }
+
+
+        return outputArray;
+    }
+
     private double[] GetCumulativeHeatingDegreeDays(double[] meanValues, String prefix)
     {
+        int length = meanValues.length;
         double[] cumulative = GetPreviousValues(prefix, hDate);
 
-        for(int i = 0; i < meanValues.length; i++)
+        for(int i = 0; i < length; i++)
         {
             double previousVal = 0.0;
             if(cumulative != null) {
@@ -450,9 +550,10 @@ public class NldasForcingComposite extends Composite
 
     private double[] GetCumulativeFreezingDegreeDays(double[] meanValues, String prefix)
     {
+        int length = meanValues.length;
         double[] cumulative = GetPreviousValues(prefix, fDate);
 
-        for(int i = 0; i < meanValues.length; i++)
+        for(int i = 0; i < length; i++)
         {
             double previousVal = 0.0;
             if(cumulative != null) {
@@ -472,10 +573,11 @@ public class NldasForcingComposite extends Composite
 
     private double[] GetCumulativeWNVAmpDays(double[] meanValues, String prefix)
     {
-        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(sDate.getMonth(), sDate.getDay()));
+        int length = meanValues.length;
+        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(1,1));
         double degree = 14.3;
 
-        for(int i = 0; i < meanValues.length; i++)
+        for(int i = 0; i < length; i++)
         {
             double previousVal = 0.0;
             if(cumulative != null) {
@@ -495,10 +597,11 @@ public class NldasForcingComposite extends Composite
 
     private double[] GetCumulativeLymeDiseaseDays(double[] meanValues, String prefix)
     {
-        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(sDate.getMonth(), sDate.getDay()));
+        int length = meanValues.length;
+        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(1, 1));
         double degree = 0.0;
 
-        for(int i = 0; i < meanValues.length; i++)
+        for(int i = 0; i < length; i++)
         {
             double previousVal = 0.0;
             if(cumulative != null) {
@@ -518,19 +621,11 @@ public class NldasForcingComposite extends Composite
 
     private double[] GetCumulativeOverwinteringDays(double[] meanValues, String prefix)
     {
-        double[] cumulative;
+        int length = meanValues.length;
+        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(7, 1));
         double degree = 0.0;
 
-        if(sDate.getMonth() < 7)
-        {
-            cumulative = GetPreviousValues(prefix, MonthDay.of(7, 1));
-        }
-        else
-        {
-            cumulative = GetPreviousValues(prefix, MonthDay.of(sDate.getMonth(), sDate.getDay()));
-        }
-
-        for(int i = 0; i < meanValues.length; i++)
+        for(int i = 0; i < length; i++)
         {
             double previousVal = 0.0;
             if(cumulative != null) {
