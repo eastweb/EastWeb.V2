@@ -21,6 +21,7 @@ public abstract class Reproject {
     private File [] inputFiles;
     private String shapefile;
     private Projection projection;
+    private Integer noDataValue;
     protected String wktStr;
     protected boolean NoProj;  // no reprojection =  true
     protected final Boolean deleteInputDirectory;
@@ -30,6 +31,7 @@ public abstract class Reproject {
         outputFolder = data.getOutputFolder();
         shapefile = data.getShapefile();
         projection = data.getProjection();
+        noDataValue = data.getNoDataValue();
 
         //check if there is at least one input file in the given folder
         inputFolder = new File(inputFolders[0]);
@@ -98,7 +100,7 @@ public abstract class Reproject {
             File outputFile = new File (outputFolder, fileName);
             // reproject
             // GdalUtils.project(f, shapefile, projection, outputFile);
-            GdalUtils.project(f, shapefile, projection, outputFile);
+            GdalUtils.project(f, shapefile, projection, outputFile, noDataValue);
         }
 
     }

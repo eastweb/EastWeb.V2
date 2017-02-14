@@ -109,7 +109,7 @@ public class GdalUtils {
      * @throws ConfigReadException
      *             *
      **/
-    public static void project(File input, String masterShapeFile, Projection projection, File output) {
+    public static void project(File input, String masterShapeFile, Projection projection, File output, Integer noDataValue) {
         assert (masterShapeFile != null);
         GdalUtils.register();
 
@@ -171,6 +171,7 @@ public class GdalUtils {
                 // shape file
                 // SpatialReference outputRef = new SpatialReference();
                 // outputRef.ImportFromWkt(wkt);
+                outputDS.GetRasterBand(1).SetNoDataValue(noDataValue);
                 String outputProjection =
                         features.get(0).GetLayer(0).GetSpatialRef().ExportToWkt();
                 outputDS.SetProjection(outputProjection);
