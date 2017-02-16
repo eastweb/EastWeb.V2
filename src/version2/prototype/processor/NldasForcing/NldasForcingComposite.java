@@ -536,6 +536,10 @@ public class NldasForcingComposite extends Composite
             if(cumulative != null) {
                 previousVal = cumulative[i];
             }
+            else if(cumulative == null && meanValues[i] == 9999.0)
+            {
+                previousVal = meanValues[i];
+            }
 
             // Fill value is 9999.0
             if(meanValues[i] != 9999.0 && meanValues[i] > hDegree) {
@@ -558,6 +562,10 @@ public class NldasForcingComposite extends Composite
             double previousVal = 0.0;
             if(cumulative != null) {
                 previousVal = cumulative[i];
+            }
+            else if(cumulative == null && meanValues[i] == 9999.0)
+            {
+                previousVal = meanValues[i];
             }
 
             // Fill value is 9999.0
@@ -583,6 +591,10 @@ public class NldasForcingComposite extends Composite
             if(cumulative != null) {
                 previousVal = cumulative[i];
             }
+            else if(cumulative == null && meanValues[i] == 9999.0)
+            {
+                previousVal = meanValues[i];
+            }
 
             // Fill value is 9999.0
             if(meanValues[i] != 9999.0 && meanValues[i] > degree) {
@@ -607,6 +619,10 @@ public class NldasForcingComposite extends Composite
             if(cumulative != null) {
                 previousVal = cumulative[i];
             }
+            else if(cumulative == null && meanValues[i] == 9999.0)
+            {
+                previousVal = meanValues[i];
+            }
 
             // Fill value is 9999.0
             if(meanValues[i] != 9999.0 && meanValues[i] > degree) {
@@ -630,6 +646,10 @@ public class NldasForcingComposite extends Composite
             double previousVal = 0.0;
             if(cumulative != null) {
                 previousVal = cumulative[i];
+            }
+            else if(cumulative == null && meanValues[i] == 9999.0)
+            {
+                previousVal = meanValues[i];
             }
 
             // Fill value is 9999.0

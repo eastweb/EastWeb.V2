@@ -20,7 +20,6 @@
 	<classpathentry kind="lib" path="forms-1.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/objenesis/objenesis-2.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/gdal/gdal.jar"/>
 	<classpathentry kind="lib" path="lib/HDF/fits.jar"/>
 	<classpathentry kind="lib" path="lib/HDF/jarfitsobj.jar"/>
 	<classpathentry kind="lib" path="lib/HDF/jarh4obj.jar"/>
@@ -41,5 +40,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/netcdfAll-4.6.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.9.4.jar"/>
+	<classpathentry kind="lib" path="lib/gdal/gdal.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/veronica/Documents/64-bit/eclipse/workspace/EastWeb.V2"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
