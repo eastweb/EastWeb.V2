@@ -40,10 +40,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/netcdfAll-4.6.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.9.4.jar"/>
-	<classpathentry kind="lib" path="lib/gdal/gdal.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/veronica/Documents/64-bit/eclipse/workspace/EastWeb.V2"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="lib/gdal/gdal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
