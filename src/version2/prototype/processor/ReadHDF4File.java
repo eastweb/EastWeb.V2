@@ -54,18 +54,19 @@ public class ReadHDF4File
             for (int i = filenames.length - 1; i >= 0; i--)
             {
                 // call the gdalinfo to list the HDF info including the sdsNames
-                String command = "gdalinfo " + filenames[i];
+                //String command = "gdalinfo " + filenames[i];
+                String command = "C:\\Users\\yi.liu\\git\\EastWeb.V2\\lib\\gdal\\gdalinfo " + filenames[i];
                 p = Runtime.getRuntime().exec(command);
                 BufferedReader reader =
                         new BufferedReader(new InputStreamReader(p.getInputStream()));
 
                 String line = "";
                 int j = 0;
-
+                System.out.println((line = reader.readLine())!= null);
                 while ((line = reader.readLine())!= null) {
                     Pattern pattern = Pattern.compile( bandpattern);
                     Matcher matcher = pattern.matcher(line);
-
+                    System.out.println(line);
                     if (matcher.find())
                     {
                         System.out.println("find");
