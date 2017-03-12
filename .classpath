@@ -16,20 +16,9 @@
 	<classpathentry kind="lib" path="lib/jface/org.eclipse.osgi_3.6.2.R36x_v20110210.jar"/>
 	<classpathentry kind="lib" path="lib/jface/org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-jdbc/postgresql-9.0-801.jdbc4.jar"/>
-	<classpathentry kind="lib" path="lib/swt/swt.jar"/>
 	<classpathentry kind="lib" path="forms-1.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/objenesis/objenesis-2.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/HDF/fits.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/jarfitsobj.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/jarh4obj.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/jarh5obj.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/jarhdf-2.11.0.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/jarhdf5-2.11.0.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/jarhdfobj.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/jarnc2obj.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/slf4j-api-1.7.5.jar"/>
-	<classpathentry kind="lib" path="lib/HDF/slf4j-nop-1.7.5.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0/mchange-commons-java-0.2.10.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.5.1.jar">
 		<attributes>
@@ -40,6 +29,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/netcdfAll-4.6.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.9.4.jar"/>
-	<classpathentry kind="lib" path="lib/gdal/gdal.jar"/>
+	<classpathentry kind="lib" path="lib/gdal/lib/gdal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
