@@ -127,12 +127,12 @@ public class ModisNBARV6PrepareProcessTask extends PrepareProcessTask {
     @Override
     // bands 8 - 14
     public int[] getDataBands() {
-        return new int[] {8, 9, 10, 11, 12, 13, 14};
+        return new int[] {1, 2, 3, 4, 5, 6, 7};
     }
 
     @Override
     // bands 12 - 18
     public int[] getQCBands() {
-        return new int[] {12, 13, 14, 15, 16, 17, 18};
+        return new int[] {1, 2, 3, 4, 5, 6, 7};
     }
 }

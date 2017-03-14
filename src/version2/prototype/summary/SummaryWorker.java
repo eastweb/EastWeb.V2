@@ -217,7 +217,7 @@ public class SummaryWorker extends ProcessWorker {
     @Override
     public boolean verifyResults() {
 
-        String url = "jdbc:postgresql://localhost:5432/" + configInstance.getDatabaseName();
+        String url = "jdbc:postgresql://localhost:5433/" + configInstance.getDatabaseName();
         Connection con = null;
         boolean allGood = true;
         try {

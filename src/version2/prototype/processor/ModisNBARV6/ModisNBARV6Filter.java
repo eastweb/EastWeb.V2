@@ -40,8 +40,8 @@ public class ModisNBARV6Filter extends Filter{
             <Level>NoScreening (QA flag = 0,1,2,or 3)</Level>
         </QualityControl>
 
-        Data bands: {8, 9, 10, 11, 12, 13, 14}
-        QC bands: {12, 13, 14, 15, 16, 17, 18}
+        Data bands: {1,2,3,4,5,6,7}
+        QC bands: {1,2,3,4,5,6,7}
 
         each is a separate .tif file after mozaicking, such as band8.tif
      */

@@ -1,8 +1,12 @@
 package version2.prototype.processor;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.gdal.gdal.Dataset;
@@ -12,35 +16,27 @@ import org.gdal.gdalconst.gdalconstConstants;
 import version2.prototype.util.GdalUtils;
 
 
-/* Modified by YL on May 31st
+/* rewrote by YL on March 11, 2017
  */
 
-// Mosaic tiles together
+// Mosaic tiles together using gdalwarp
 public abstract class Mozaic {
 
     //locations for the input files. for this step, will only use inputFolders[0]
     String [] inputFolders ;
 
     //location for the output file
-    protected File outputFolder;
+    protected String outputFolder;
     // the bands need to be exacted.
     protected int [] bands;
+    // the bandname patter
+    protected String bandpattern;
     protected File inputFolder;
     // the files in the input folder
     protected File [] inputFiles;
     // hold the output files
     protected ArrayList<File> outputFiles;
 
-    protected int tileNumber;
-
-    protected int xSize;
-    protected int ySize;
-    protected int outputXSize;
-    protected int outputYSize;
-    protected ModisTileData[] tileList;
-    protected ModisTileData[][] tileMetrix;
-    protected int tileMetrixRow;
-    protected int tileMetrixClo;
     protected final Boolean deleteInputDirectory;
 
     public Mozaic(ProcessData data, Boolean deleteInputDirectory) throws InterruptedException {
@@ -51,26 +47,19 @@ public abstract class Mozaic {
         //check if there is at least one input file in the given folder
         inputFolder = new File(inputFolders[0]);
         File[] listOfFiles = inputFolder.listFiles();
-        tileNumber = listOfFiles.length;
-        assert (tileNumber >= 1);
+
         //set the input files
         inputFiles = listOfFiles;
 
-        outputFolder = new File(data.getOutputFolder());
-        outputFolder.mkdirs();
-
+        outputFolder = data.getOutputFolder();
+        new File(outputFolder).mkdirs();
+        System.out.println(outputFolder);
         bands = getBands();
+
+        bandpattern = getBandNamePattern();
+
         outputFiles = new ArrayList<File>();
 
-        // read tile data and get size of tiles
-        tileList = new ModisTileData[tileNumber];
-
-        for (int i = 0; i < tileNumber; i++) {
-            tileList[i] = new ModisTileData(inputFiles[i]);
-        }
-
-        xSize = tileList[0].xSize;
-        ySize = tileList[0].ySize;
         this.deleteInputDirectory = deleteInputDirectory;
     }
 
@@ -78,18 +67,12 @@ public abstract class Mozaic {
     public void run() throws Exception{
 
         //create outputDirectory
-        if (!outputFolder.exists())
-        {   FileUtils.forceMkdir(outputFolder); }
+        if (!(new File(outputFolder)).exists())
+        {   FileUtils.forceMkdir(new File(outputFolder)); }
 
-        for (File mInput : inputFiles) {
-            File f = new File(outputFolder, mInput.getName());
-            if(f.exists()) {
-                f.delete();
-            }
-        }
+        String [] bandFiles = bandNames(inputFiles);
 
-        sortTiles();
-        linkTiles();
+        mosaicTiles(bandFiles, bands);
 
         // remove the input folder
         if(deleteInputDirectory)
@@ -107,121 +90,78 @@ public abstract class Mozaic {
         }
     }
 
+    //the bands for each file
     abstract protected int [] getBands();
 
-    protected void sortTiles() {
-        int minH = tileList[0].horizon;
-        int maxH = tileList[0].horizon;
-        int minV = tileList[0].vertical;
-        int maxV = tileList[0].vertical;
+    // the band name pattern
+    // something like: /MOD_Grid_BRDF:Nadir_Reflectance_Band(1|2|3|4|5|6|7)/;
+    abstract protected String getBandNamePattern();
 
-        for (int i = 0; i < tileNumber; i++) {
-            if (minH > tileList[i].horizon) {
-                minH = tileList[i].horizon;
-            }
+    /* filename: files in the folder
+     * sdsName: The name of the band, such as MOD_Grid_BRDF:Nadir_Reflectance_Band
+     * band:  the input band
+     * return:  an array with each element for the files to be mosaiced
+     */
+    private String[] bandNames(File[] filenames)
+    {
+        Process p;
 
-            if (maxH < tileList[i].horizon) {
-                maxH = tileList[i].horizon;
-            }
-            if (minV > tileList[i].vertical) {
-                minV = tileList[i].vertical;
-            }
+        String [] bandNames = new String[bands.length] ;
 
-            if (maxV < tileList[i].vertical) {
-                maxV = tileList[i].vertical;
-            }
-        }
+        try {
+            for (int i = filenames.length - 1; i >= 0; i--)
+            {
+                // call the gdalinfo to list the HDF info including the sdsNames
+                String command = "./lib/gdal/gdalinfo " + filenames[i].getAbsolutePath();
+                p = Runtime.getRuntime().exec(command);
+                BufferedReader reader =
+                        new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-        tileMetrixRow = maxV - minV + 1;
-        tileMetrixClo = maxH - minH + 1;
-        tileMetrix = new ModisTileData[tileMetrixRow][tileMetrixClo];
+                String line = "";
+                int j = 0;
 
-        for (int i = 0; i < tileNumber; i++) {
-            tileMetrix[tileList[i].vertical - minV][tileList[i].horizon - minH] = tileList[i];
-        }
+                while ((line = reader.readLine())!= null) {
+                    Pattern pattern = Pattern.compile(bandpattern);
+                    Matcher matcher = pattern.matcher(line);
 
-        /*    for (int i = 0; i < tileMetrixRow; i++) {
-            for (int j = 0; j < tileMetrixClo; j++) {
-                System.out.println(Boolean.toString(tileMetrix[i][j] != null) + i + " " + j);
-            }
-        }*/
-
-        outputXSize = xSize * tileMetrixClo;
-        outputYSize = ySize * tileMetrixRow;
-    }
-
-    private void linkTiles() throws IOException {
-        GdalUtils.register();
-        synchronized (GdalUtils.lockObject) {
-            // loop for each band needed be reprojected
-            for (int i = 0; i < bands.length; i++) {
-                int currentBand = bands[i];
-                File outputFile = new File(outputFolder, "band" + currentBand + ".tif");
-
-                String[] option = { "INTERLEAVE=PIXEL" };
-                Dataset output = gdal.GetDriverByName("GTiff").Create(
-                        outputFile.getAbsolutePath(),
-                        outputXSize,
-                        outputYSize,
-                        1, // band number
-                        gdalconstConstants.GDT_Float32, option);
-
-                Dataset input = gdal.Open(tileList[0].sdsName[0]);
-
-                output.SetGeoTransform(input.GetGeoTransform());
-                output.SetProjection(input.GetProjection());
-                output.SetMetadata(input.GetMetadata_Dict());
-
-                // if error happens, change to input=null
-                input.delete();
-
-                // outputTemp is used to store double array data of output file
-                ImageArray outputTemp = new ImageArray(output.getRasterXSize(), output.getRasterYSize());
-
-                // loop for each tile
-                for (int col = 0; col < tileMetrixClo; col++) {
-                    for (int row = 0; row < tileMetrixRow; row++) {
-                        ImageArray tempArray = null;
-
-                        if (tileMetrix[row][col] != null) {
-                            //                        System.out.println("current= "
-                            //                                + currentBand
-                            //                                + " "
-                            //                                + tileMetrix[row][col].sdsName[currentBand - 1]);
-
-                            Dataset tempTile = gdal.Open(tileMetrix[row][col].sdsName[currentBand - 1]);
-                            tempArray = new ImageArray(tempTile.GetRasterBand(1));
-                            tempTile.delete();
+                    if (matcher.find())
+                    {
+                        if (bandNames[j] == null) {
+                            bandNames[j] = " ";
                         }
-
-                        // loop for each row of temp array image
-                        for (int j = ySize * row; j < ySize * (row + 1); j++) {
-                            double[] rowTemp = outputTemp.getRow(j);
-
-                            if (tempArray != null) {
-                                double[] tileRow = tempArray.getRow(j - row * ySize);
-                                System.arraycopy(tileRow, 0, rowTemp, col * xSize, xSize);
-                            } else {
-                                // set value for the no tile data area
-                                double[] tileRow = new double[xSize];
-
-                                for (int k = 0; k < xSize; k++) {
-                                    tileRow[k] = -3.40282346639e+038;
-                                }
-                                System.arraycopy(tileRow, 0, rowTemp, col * xSize, xSize);
-                            }
-
-                            outputTemp.setRow(j, rowTemp);
-                            rowTemp = null;
-                        }
+                        // add bands to the string
+                        bandNames[j++] += line.substring(line.indexOf('=') + 1) + " ";
                     }
                 }
-
-                output.GetRasterBand(1).WriteRaster(0, 0, output.getRasterXSize(), output.getRasterYSize(), outputTemp.getArray());
-                output.GetRasterBand(1).ComputeStatistics(true);
-                output.delete();
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        GdalUtils.errorCheck();
+
+        return bandNames;
     }
+
+    private void mosaicTiles(String [] bandNames, int bands[])
+    {
+        Process p;;
+        String outputFile;
+        try {
+            for (int i = bandNames.length - 1; i >= 0; i--)
+            {
+                outputFile = outputFolder + File.separator + "band" + String.valueOf(bands[i]) + ".tif";
+                // call the gdalinfo to list the HDF info including the sdsNames
+                String command = "./lib/gdal/gdalwarp --config GDAL_CACHEMAX 1000 -wm 1000 "
+                        + bandNames[i] + " " +outputFile;
+                p = Runtime.getRuntime().exec(command);
+            }
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
