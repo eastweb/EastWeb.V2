@@ -5,6 +5,7 @@
 	<NoDataValue>9999</NoDataValue>
 	<Resolution>12500</Resolution>
 	<CompositesContinueIntoNextYear>TRUE</CompositesContinueIntoNextYear>
+	<ExtraIndices>TRUE</ExtraIndices>
 	<ExtraDownloadFiles/>
 	<Download>
 		<DownloadFactoryClassName>NldasForcingFactory</DownloadFactoryClassName>

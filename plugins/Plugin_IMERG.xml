@@ -5,6 +5,7 @@
 	<NoDataValue>9999</NoDataValue>
 	<Resolution>10000</Resolution>
 	<CompositesContinueIntoNextYear>TRUE</CompositesContinueIntoNextYear>
+	<ExtraIndices>FALSE</ExtraIndices>
 	<ExtraDownloadFiles/>
 	<Download>
 		<DownloadFactoryClassName>IMERGFactory</DownloadFactoryClassName>

@@ -34,7 +34,7 @@ public class TestIMERG_RTDownload
         LocalDate ld = LocalDate.parse("Mon Dec 28 00:00:01 CDT 2015", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
         //LocalDate ld = LocalDate.parse("Wed Sep 14 00:00:01 CDT 2016", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
 
-        DownloadMetaData data = new DownloadMetaData(null, null, null, 10000, true, null,
+        DownloadMetaData data = new DownloadMetaData(null, null, null, 10000, true, false, null,
                 mode, myFtp, myHttp, className, timeZone, filesPerDay,
                 datePatternStr, fileNamePatternStr, ld);
 

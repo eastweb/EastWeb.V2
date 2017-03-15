@@ -666,7 +666,7 @@ public class DatabaseCache extends Observable{
      */
     public void UploadResultsToDb(Connection con, ArrayList<SummaryResult> newResults, int summaryIDNum, String indexNm, TemporalSummaryCompositionStrategy compStrategy, int year, int day,
             Process process, int daysPerInputData) throws IllegalArgumentException, UnsupportedOperationException, IOException, ClassNotFoundException, ParserConfigurationException, SAXException,
-            SQLException {
+    SQLException {
         if(newResults.size() == 0) {
             return;
         }
@@ -760,7 +760,7 @@ public class DatabaseCache extends Observable{
             //            scheduler.NotifyUI(new GeneralUIEventObject(this, null));
         }
         catch (SQLException e) {
-            ErrorLog.add(process, "Problem in ZonalSummaryCalculator.uploadResultsToDb executing zonal summaries results.", e);
+            //ErrorLog.add(process, "Problem in ZonalSummaryCalculator.uploadResultsToDb executing zonal summaries results.", e);
             //            conn.rollback();
         }
         finally {

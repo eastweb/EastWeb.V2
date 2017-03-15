@@ -4,7 +4,8 @@
 	<DaysPerInputData>1</DaysPerInputData>
 	<NoDataValue>-99999</NoDataValue>
 	<Resolution>500</Resolution>
-	<CompositesContinueIntoNextYear>FALSE</CompositesContinueIntoNextYear>
+	<CompositesContinueIntoNextYear>TRUE</CompositesContinueIntoNextYear>
+	<ExtraIndices>FALSE</ExtraIndices>
 	<ExtraDownloadFiles>
 		<Name>QC</Name>
 	</ExtraDownloadFiles>

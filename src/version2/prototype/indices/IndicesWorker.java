@@ -1,9 +1,12 @@
 package version2.prototype.indices;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -29,6 +32,7 @@ import version2.prototype.PluginMetaData.PluginMetaDataCollection.PluginMetaData
 import version2.prototype.ProjectInfoMetaData.ProjectInfoFile;
 import version2.prototype.ProjectInfoMetaData.ProjectInfoPlugin;
 import version2.prototype.Scheduler.ProcessName;
+import version2.prototype.indices.NldasForcing.NldasForcingExtraIndices;
 import version2.prototype.util.DataFileMetaData;
 import version2.prototype.util.DatabaseCache;
 import version2.prototype.util.DatabaseConnection;
@@ -223,7 +227,35 @@ public class IndicesWorker extends ProcessWorker{
 
     @Override
     public boolean verifyResults() {
-        // TODO Auto-generated method stub
-        return true;
+        String url = "jdbc:postgresql://localhost:5432/" + configInstance.getDatabaseName();
+        Connection con = null;
+        boolean allGood = true;
+        try {
+            con = DriverManager.getConnection(url, configInstance.getDatabaseUsername(), configInstance.getDatabasePassword());
+
+            if(pluginMetaData.ExtraIndices)
+            {
+                if(pluginInfo.GetName() == "NldasForcing")
+                {
+                    NldasForcingExtraIndices.getCumulative(con, projectInfoFile.GetWorkingDir() + "\\projects", configInstance.getGlobalSchema(), Schemas.getSchemaName(projectInfoFile.GetProjectName(), pluginInfo.GetName()),
+                            projectInfoFile.GetProjectName(), projectInfoFile.GetStartDate(), pluginMetaData.DaysPerInputData, projectInfoFile.GetFreezingDate(), projectInfoFile.GetHeatingDate());
+                }
+                allGood = false;
+            }
+            con.close();
+
+        } catch (SQLException|NumberFormatException|ClassNotFoundException|FileNotFoundException e) {
+            ErrorLog.add(process, "Problem identifying missing summaries", e);
+
+            if(con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e1) {
+                    ErrorLog.add(process, "Problem closing connection", e);
+                }
+            }
+        }
+
+        return allGood;
     }
 }

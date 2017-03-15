@@ -21,8 +21,8 @@ public class ProcessorMetaData extends ProcessMetaData {
     public final Map<Integer, String> processStep;
     public final Integer numOfOutput;
 
-    public ProcessorMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, NodeList n){
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+    public ProcessorMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles, NodeList n){
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         nList = n;
         processStep = new HashMap<Integer, String>();
         Element processorNode = (Element) nList.item(0);
@@ -48,10 +48,10 @@ public class ProcessorMetaData extends ProcessMetaData {
      * @param processSteps
      * @param numOfOutput
      */
-    public ProcessorMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles,
+    public ProcessorMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles,
             Map<Integer, String> processSteps, Integer numOfOutput)
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         processStep = processSteps;
         this.numOfOutput = numOfOutput;
     }
