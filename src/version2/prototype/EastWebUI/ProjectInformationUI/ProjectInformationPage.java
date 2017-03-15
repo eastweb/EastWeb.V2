@@ -52,6 +52,9 @@ import version2.prototype.ProjectInfoMetaData.ProjectInfoFile;
 import version2.prototype.ProjectInfoMetaData.ProjectInfoPlugin;
 import version2.prototype.ProjectInfoMetaData.ProjectInfoSummary;
 
+import org.gdal.gdal.Dataset;
+import org.gdal.gdal.gdal;
+import org.gdal.gdalconst.gdalconstConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -278,20 +281,20 @@ public class ProjectInformationPage {
         maskFileBrowseButton.setBounds(320, 110, 30, 25);
         panel.add(maskFileBrowseButton);
 
-        JLabel lblResolution = new JLabel("Masking Resolution:");
-        lblResolution.setBounds(10, 150, 130, 15);
-        panel.add(lblResolution);
-
-        resolutionTextField = new JTextField();
-        resolutionTextField.setBounds(150, 140, 200, 30);
-        panel.add(resolutionTextField);
-        resolutionTextField.setColumns(10);
+        //        JLabel lblResolution = new JLabel("Masking Resolution:");
+        //        lblResolution.setBounds(10, 150, 130, 15);
+        //        panel.add(lblResolution);
+        //
+        //        resolutionTextField = new JTextField();
+        //        resolutionTextField.setBounds(150, 140, 200, 30);
+        //        panel.add(resolutionTextField);
+        //        resolutionTextField.setColumns(10);
 
         final JLabel chmasterShapeFileLabel = new JLabel("Master shape file:");
-        chmasterShapeFileLabel.setBounds(10, 180, 130, 15);
+        chmasterShapeFileLabel.setBounds(10, 150, 130, 15);
         panel.add(chmasterShapeFileLabel);
         masterShapeTextField = new JTextField();
-        masterShapeTextField.setBounds(150, 170, 150, 30);
+        masterShapeTextField.setBounds(150, 140, 150, 30);
         panel.add(masterShapeTextField);
         masterShapeTextField.setColumns(10);
 
@@ -304,14 +307,14 @@ public class ProjectInformationPage {
             @Override
             public void actionPerformed(ActionEvent evt) {chooseMasterShapeFile();}
         });
-        masterShapeFileBrowseButton.setBounds(320, 170, 30, 25);
+        masterShapeFileBrowseButton.setBounds(320, 140, 30, 25);
         panel.add(masterShapeFileBrowseButton);
 
         JLabel lblTimeZone = new JLabel("Time Zone:");
-        lblTimeZone.setBounds(10, 330, 130, 15);
+        lblTimeZone.setBounds(10, 300, 130, 15);
         panel.add(lblTimeZone);
         timeZoneComboBox = new JComboBox<String>();
-        timeZoneComboBox.setBounds(150, 320, 200, 30);
+        timeZoneComboBox.setBounds(150, 290, 200, 30);
         for (String id : TimeZone.getAvailableIDs()) {
             TimeZone zone = TimeZone.getTimeZone(id);
             int offset = zone.getRawOffset()/1000;
@@ -323,50 +326,50 @@ public class ProjectInformationPage {
         panel.add(timeZoneComboBox);
 
         JLabel lblFreezingStartDate = new JLabel("Freezing Start Date: ");
-        lblFreezingStartDate.setBounds(10, 210, 130, 15);
+        lblFreezingStartDate.setBounds(10, 180, 130, 15);
         panel.add(lblFreezingStartDate);
         freezingDateChooser = new JDateChooser();
         freezingDateChooser.setDateFormatString("MMM d");
-        freezingDateChooser.setBounds(150, 200, 200, 30);
+        freezingDateChooser.setBounds(150, 170, 200, 30);
         panel.add(freezingDateChooser);
 
         JLabel lblHeatingStartDate = new JLabel("Heating Start Date:");
-        lblHeatingStartDate.setBounds(10, 270, 130, 15);
+        lblHeatingStartDate.setBounds(10, 240, 130, 15);
         panel.add(lblHeatingStartDate);
         heatingDateChooser = new JDateChooser();
         heatingDateChooser.setDateFormatString("MMM d");
-        heatingDateChooser.setBounds(150, 260, 200, 30);
+        heatingDateChooser.setBounds(150, 230, 200, 30);
         panel.add(heatingDateChooser);
 
         JLabel lblCoolingDegreeThreshold = new JLabel("Cooling degree:");
         lblCoolingDegreeThreshold.setToolTipText("Cooling degree threshold");
-        lblCoolingDegreeThreshold.setBounds(10, 240, 130, 15);
+        lblCoolingDegreeThreshold.setBounds(10, 210, 130, 15);
         panel.add(lblCoolingDegreeThreshold);
         coolingTextField = new JTextField();
-        coolingTextField.setBounds(150, 230, 100, 30);
+        coolingTextField.setBounds(150, 200, 100, 30);
         panel.add(coolingTextField);
         coolingTextField.setColumns(10);
         JLabel lblCelcius = new JLabel("Celcius");
-        lblCelcius.setBounds(275, 240, 50, 15);
+        lblCelcius.setBounds(275, 210, 50, 15);
         panel.add(lblCelcius);
 
         JLabel lblHeatingDegreeThreshold = new JLabel("Heating degree");
         lblHeatingDegreeThreshold.setToolTipText("Heating degree threshold");
-        lblHeatingDegreeThreshold.setBounds(10, 300, 130, 15);
+        lblHeatingDegreeThreshold.setBounds(10, 270, 130, 15);
         panel.add(lblHeatingDegreeThreshold);
         heatingTextField = new JTextField();
-        heatingTextField.setBounds(150, 290, 100, 30);
+        heatingTextField.setBounds(150, 260, 100, 30);
         panel.add(heatingTextField);
         heatingTextField.setColumns(10);
         JLabel label = new JLabel("Celcius");
-        label.setBounds(275, 300, 50, 15);
+        label.setBounds(275, 270, 50, 15);
         panel.add(label);
 
         JLabel lblClipping = new JLabel("Clipping:");
-        lblClipping.setBounds(10, 360, 130, 15);
+        lblClipping.setBounds(10, 330, 130, 15);
         panel.add(lblClipping);
         isClippingCheckBox = new JCheckBox("");
-        isClippingCheckBox.setBounds(150, 360, 200, 15);
+        isClippingCheckBox.setBounds(150, 330, 200, 15);
         panel.add(isClippingCheckBox);
     }
 
@@ -549,8 +552,29 @@ public class ProjectInformationPage {
             maskingFile.appendChild(doc.createTextNode(maskFile.getText()));
             masking.appendChild(maskingFile);
 
+            Dataset hDataset;
+            double[] adfGeoTransform = new double[6];
+            String pszFilename = maskFile.getText();
+            String res="";
+
+            gdal.AllRegister();
+
+            hDataset = gdal.Open(pszFilename, gdalconstConstants.GA_ReadOnly);
+
+            if (hDataset != null)
+            {
+                hDataset.GetGeoTransform(adfGeoTransform);
+                {
+                    if (adfGeoTransform[2] == 0.0 && adfGeoTransform[4] == 0.0) {
+                        res = "" + adfGeoTransform[1];
+                    }
+                }
+
+                hDataset.delete();
+            }
+
             Element resolution = doc.createElement("Resolution");
-            resolution.appendChild(doc.createTextNode(resolutionTextField.getText()));
+            resolution.appendChild(doc.createTextNode(res));
             masking.appendChild(resolution);
 
             Element masterShapeFile = doc.createElement("MasterShapeFile");

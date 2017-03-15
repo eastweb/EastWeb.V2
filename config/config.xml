@@ -5,7 +5,7 @@
 <Database>
 <GlobalSchema>EASTWeb</GlobalSchema>
 <HostName>localhost</HostName>
-<Port>5433</Port>
+<Port>5432</Port>
 <DatabaseName>postgres</DatabaseName>
 <UserName>postgres</UserName>
 <PassWord>eastweb</PassWord>

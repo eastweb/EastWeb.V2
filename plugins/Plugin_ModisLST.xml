@@ -5,6 +5,7 @@
 	<NoDataValue>-99999</NoDataValue>
 	<Resolution>1000</Resolution>
 	<CompositesContinueIntoNextYear>FALSE</CompositesContinueIntoNextYear>
+	<ExtraIndices>FALSE</ExtraIndices>
 	<ExtraDownloadFiles/>
 	<Download>
 		<DownloadFactoryClassName>ModisLSTFactory</DownloadFactoryClassName>

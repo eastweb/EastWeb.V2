@@ -30,7 +30,7 @@ public class TestDownloadTRMM3B42RT_New
         // LocalDate ld = LocalDate.parse("Wed Sep 14 00:00:01 CDT 2016", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
         LocalDate ld = LocalDate.parse("Wed Dec 30 00:00:01 CDT 2015", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
 
-        DownloadMetaData data = new DownloadMetaData(null, null, null, 25000, true, null,
+        DownloadMetaData data = new DownloadMetaData(null, null, null, 25000, true, false, null,
                 mode, myFtp, myHttp, className, timeZone, filesPerDay,
                 datePatternStr, fileNamePatternStr, ld);
 

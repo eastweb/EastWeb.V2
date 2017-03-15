@@ -58,7 +58,7 @@ public class UpdateForMissingSummaries {
         final Integer outDayCount = Integer.parseInt(args[9]);
 
         Class.forName("org.postgresql.Driver");
-        String url = "jdbc:postgresql://localhost:5433/" + databaseName;
+        String url = "jdbc:postgresql://localhost:5432/" + databaseName;
         Connection con = DriverManager.getConnection(url, user, password);
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -564,7 +564,7 @@ public class UpdateForMissingSummaries {
         {
             try{
                 Class.forName("org.postgresql.Driver");
-                String url = "jdbc:postgresql://localhost:5433/" + databaseName;
+                String url = "jdbc:postgresql://localhost:5432/" + databaseName;
                 Connection con = DriverManager.getConnection(url, user, password);
                 Statement stmt = con.createStatement();
                 ResultSet rs = null;

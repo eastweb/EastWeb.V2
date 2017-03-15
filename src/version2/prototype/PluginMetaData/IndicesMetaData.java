@@ -17,8 +17,8 @@ public class IndicesMetaData extends ProcessMetaData {
 
     private NodeList nList;
 
-    public IndicesMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, NodeList n) {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+    public IndicesMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles, NodeList n) {
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         nList = n;
 
         indicesNames = new ArrayList<String>();
@@ -38,9 +38,9 @@ public class IndicesMetaData extends ProcessMetaData {
      * @param ExtraDownloadFiles
      * @param indicesNames
      */
-    public IndicesMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, ArrayList<String> indicesNames)
+    public IndicesMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles, ArrayList<String> indicesNames)
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         this.indicesNames = indicesNames;
         nList = null;
     }

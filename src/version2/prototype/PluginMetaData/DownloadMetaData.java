@@ -35,10 +35,10 @@ public class DownloadMetaData extends ProcessMetaData {
     public final ArrayList<DownloadMetaData> extraDownloads;
     public final LocalDate originDate;
 
-    public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, NodeList n) throws DOMException,
+    public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles, NodeList n) throws DOMException,
     PatternSyntaxException
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         String tempName = null;
         String tempMode = null;
         FTP tempFtp = null;
@@ -131,7 +131,7 @@ public class DownloadMetaData extends ProcessMetaData {
             {
                 if(i != dataNodeIdx)
                 {
-                    extraDownloads.add(new DownloadMetaData(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles, nList.item(i), timeZone, filesPerDay, originDate));
+                    extraDownloads.add(new DownloadMetaData(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles, nList.item(i), timeZone, filesPerDay, originDate));
                 }
             }
         } else {
@@ -159,10 +159,10 @@ public class DownloadMetaData extends ProcessMetaData {
      * @param originDate
      * @throws PatternSyntaxException
      */
-    public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, String mode, FTP myFtp, HTTP myHttp,
+    public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles, String mode, FTP myFtp, HTTP myHttp,
             String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, LocalDate originDate) throws PatternSyntaxException
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         name = "data";
         this.mode = mode;
         this.myFtp = myFtp;
@@ -205,11 +205,11 @@ public class DownloadMetaData extends ProcessMetaData {
      * @param originDate
      * @throws PatternSyntaxException
      */
-    public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, String mode, FTP myFtp, HTTP myHttp,
+    public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles, String mode, FTP myFtp, HTTP myHttp,
             String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, ArrayList<DownloadMetaData> extraDownloads, LocalDate originDate)
                     throws PatternSyntaxException
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         name = "data";
         this.mode = mode;
         this.myFtp = myFtp;
@@ -251,10 +251,10 @@ public class DownloadMetaData extends ProcessMetaData {
      * @param originDate
      * @throws PatternSyntaxException
      */
-    public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, String name, String mode, FTP myFtp,
+    public DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles, String name, String mode, FTP myFtp,
             HTTP myHttp, String downloadFactoryClassName, String timeZone, int filesPerDay, String datePatternStr, String fileNamePatternStr, LocalDate originDate) throws PatternSyntaxException
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         this.name = name.toLowerCase();
         this.mode = mode;
         this.myFtp = myFtp;
@@ -276,10 +276,10 @@ public class DownloadMetaData extends ProcessMetaData {
         this.originDate = originDate;
     }
 
-    private DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, ArrayList<String> ExtraDownloadFiles, Node extraDownloadNode, String defaultTimeZone,
+    private DownloadMetaData(String Title, ArrayList<String> QualityControlMetaData, Integer DaysPerInputData, Integer Resolution, Boolean CompositesContinueIntoNextYear, Boolean ExtraIndices, ArrayList<String> ExtraDownloadFiles, Node extraDownloadNode, String defaultTimeZone,
             int defaultFilesPerDay, LocalDate dataOriginDate) throws PatternSyntaxException, DOMException
     {
-        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraDownloadFiles);
+        super(Title, QualityControlMetaData, DaysPerInputData, Resolution, CompositesContinueIntoNextYear, ExtraIndices, ExtraDownloadFiles);
         String tempMode = null;
         FTP tempFtp = null;
         HTTP tempHttp = null;

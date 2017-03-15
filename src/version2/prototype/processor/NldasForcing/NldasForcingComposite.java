@@ -2,6 +2,7 @@ package version2.prototype.processor.NldasForcing;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.MonthDay;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -345,6 +346,7 @@ public class NldasForcingComposite extends Composite
         int size = inputDSs.size();
         double[][] PArrays = new double[size][rasterX * rasterY];
         double[][] TArrays = new double[size][rasterX * rasterY];
+        double[][] TArrays2 = new double[size][rasterX * rasterY];
         double[][] SHArrays = new double[size][rasterX * rasterY];
         double[][] RHArray = new double[size][rasterX * rasterY];
         double[][] HIArray = new double[size][rasterX * rasterY];
@@ -360,28 +362,27 @@ public class NldasForcingComposite extends Composite
             inputDSs.get(index).GetRasterBand(3).ReadRaster(0, 0, rasterX, rasterY, PArrays[index]);
         }
 
-        if(prefix.equalsIgnoreCase("Relative_Humidity_Mean"))
-        {
-            for(int pos = 0; pos < length; pos++)
-            {
-                for (int i = 0; i < size; i++) {
-                    if(TArrays[i][pos] != 9999.0) {
-                        TArrays[i][pos] = TArrays[i][pos] + 273.15;
-                    }
-                    else
-                    {
-                        TArrays[i][pos] = 9999.0;
-                    }
-                }
-            }
-        }
 
         for(int pos = 0; pos < length; pos++)
         {
             for (int i = 0; i < size; i++) {
-                if(PArrays[i][pos] != 9999.0 && TArrays[i][pos] != 9999.0 && SHArrays[i][pos] != 9999.0) {
+                if(TArrays2[i][pos] != 9999.0) {
+                    TArrays2[i][pos] = TArrays2[i][pos] + 273.15;
+                }
+                else
+                {
+                    TArrays2[i][pos] = TArrays2[i][pos];
+                }
+            }
+        }
+
+
+        for(int pos = 0; pos < length; pos++)
+        {
+            for (int i = 0; i < size; i++) {
+                if(PArrays[i][pos] != 9999.0 && TArrays2[i][pos] != 9999.0 && SHArrays[i][pos] != 9999.0) {
                     RHArray[i][pos] =0.263 * PArrays[i][pos] * SHArrays[i][pos]
-                            * (1 / (Math.exp((17.67 * (TArrays[i][pos] - 273.15)) / (TArrays[i][pos] - 29.75))));
+                            * (1 / (Math.exp((17.67 * (TArrays2[i][pos] - 273.15)) / (TArrays2[i][pos] - 29.75))));
                 }
                 else
                 {
@@ -395,20 +396,29 @@ public class NldasForcingComposite extends Composite
             for(int pos = 0; pos < length; pos++)
             {
                 for (int i = 0; i < size; i++) {
-                    if(RHArray[i][pos] != 9999.0 && TArrays[i][pos] != 9999.0 && TArrays[i][pos] > 20) {
-                        HIArray[i][pos] = -8.784695 + 1.61139411 * TArrays[i][pos] + 2.338549 * RHArray[i][pos]
-                                - 0.14611605 * TArrays[i][pos] * RHArray[i][pos] - 0.012308094 * (TArrays[i][pos] * TArrays[i][pos])
-                                - 0.016424828 * (RHArray[i][pos] * RHArray[i][pos]) + 0.02211732 * (TArrays[i][pos] * TArrays[i][pos])
-                                * RHArray[i][pos] + 0.00072546 * TArrays[i][pos] * (RHArray[i][pos] * RHArray[i][pos]) - 0.000003582
-                                * (TArrays[i][pos] * TArrays[i][pos]) * (RHArray[i][pos] * RHArray[i][pos]);
-                    }
-                    else if(TArrays[i][pos] != 9999.0)
-                    {
-                        HIArray[i][pos] = TArrays[i][pos];
+                    if(RHArray[i][pos] != 9999.0) {
+                        RHArray[i][pos] = RHArray[i][pos] / 100;
                     }
                     else
                     {
-                        HIArray[i][pos] = 9999.0;
+                        RHArray[i][pos] = RHArray[i][pos];
+                    }
+                }
+            }
+
+            for(int pos = 0; pos < length; pos++)
+            {
+                for (int i = 0; i < size; i++) {
+                    if(RHArray[i][pos] != 9999.0 && TArrays[i][pos] != 9999.0 && TArrays[i][pos] > 20) {
+                        HIArray[i][pos] = -8.784695 + 1.61139411 * TArrays[i][pos] + 2.338549 * RHArray[i][pos]
+                                - 0.14611605 * TArrays[i][pos] * RHArray[i][pos] - 0.012308094 * (TArrays[i][pos] * TArrays[i][pos])
+                                - 0.016424828 * (RHArray[i][pos] * RHArray[i][pos]) + 0.002211732 * (TArrays[i][pos] * TArrays[i][pos])
+                                * RHArray[i][pos] + 0.00072546 * TArrays[i][pos] * (RHArray[i][pos] * RHArray[i][pos]) - 0.000003582
+                                * (TArrays[i][pos] * TArrays[i][pos]) * (RHArray[i][pos] * RHArray[i][pos]);
+                    }
+                    else
+                    {
+                        HIArray[i][pos] = TArrays[i][pos];
                     }
                 }
             }
@@ -528,7 +538,7 @@ public class NldasForcingComposite extends Composite
     private double[] GetCumulativeHeatingDegreeDays(double[] meanValues, String prefix)
     {
         int length = meanValues.length;
-        double[] cumulative = GetPreviousValues(prefix, hDate);
+        double[] cumulative = null; //GetPreviousValues(prefix, hDate);
 
         for(int i = 0; i < length; i++)
         {
@@ -555,7 +565,7 @@ public class NldasForcingComposite extends Composite
     private double[] GetCumulativeFreezingDegreeDays(double[] meanValues, String prefix)
     {
         int length = meanValues.length;
-        double[] cumulative = GetPreviousValues(prefix, fDate);
+        double[] cumulative = null; //GetPreviousValues(prefix, fDate);
 
         for(int i = 0; i < length; i++)
         {
@@ -582,7 +592,7 @@ public class NldasForcingComposite extends Composite
     private double[] GetCumulativeWNVAmpDays(double[] meanValues, String prefix)
     {
         int length = meanValues.length;
-        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(1,1));
+        double[] cumulative = null; //GetPreviousValues(prefix, MonthDay.of(1,1));
         double degree = 14.3;
 
         for(int i = 0; i < length; i++)
@@ -610,7 +620,7 @@ public class NldasForcingComposite extends Composite
     private double[] GetCumulativeLymeDiseaseDays(double[] meanValues, String prefix)
     {
         int length = meanValues.length;
-        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(1, 1));
+        double[] cumulative = null; //GetPreviousValues(prefix, MonthDay.of(1, 1));
         double degree = 0.0;
 
         for(int i = 0; i < length; i++)
@@ -638,7 +648,7 @@ public class NldasForcingComposite extends Composite
     private double[] GetCumulativeOverwinteringDays(double[] meanValues, String prefix)
     {
         int length = meanValues.length;
-        double[] cumulative = GetPreviousValues(prefix, MonthDay.of(7, 1));
+        double[] cumulative = null; //GetPreviousValues(prefix, MonthDay.of(7, 1));
         double degree = 0.0;
 
         for(int i = 0; i < length; i++)
@@ -680,15 +690,24 @@ public class NldasForcingComposite extends Composite
                 //Get the day before's values
                 File yesterdayFolder = null;
                 int currentDayOfYear = Integer.parseInt(inputFolder.getName());
+                LocalDate leap = LocalDate.ofYearDay(year-1, 1);
 
                 if(currentDayOfYear > 1) {
                     yesterdayFolder = new File(new File(outputFolder).getParentFile().getAbsolutePath() + File.separator
                             + String.format("%03d", (currentDayOfYear-1)));
                 }
                 else {
-                    // Previous day would be last year and day of year = 365
-                    yesterdayFolder = new File(new File(outputFolder).getParentFile().getParentFile().getAbsolutePath() + File.separator
-                            + String.format("%04d", (year-1)) + File.separator + "365");
+                    if(leap.isLeapYear())
+                    {
+                        yesterdayFolder = new File(new File(outputFolder).getParentFile().getParentFile().getAbsolutePath() + File.separator
+                                + String.format("%04d", (year-1)) + File.separator + "366");
+                    }
+                    else
+                    {
+                        // Previous day would be last year and day of year = 365
+                        yesterdayFolder = new File(new File(outputFolder).getParentFile().getParentFile().getAbsolutePath() + File.separator
+                                + String.format("%04d", (year-1)) + File.separator + "365");
+                    }
                 }
 
                 if(yesterdayFolder != null && yesterdayFolder.exists())
