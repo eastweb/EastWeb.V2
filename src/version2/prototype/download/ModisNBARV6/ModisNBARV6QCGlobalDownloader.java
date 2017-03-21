@@ -21,7 +21,6 @@ import version2.prototype.download.DownloadFailedException;
 import version2.prototype.download.GlobalDownloader;
 import version2.prototype.download.ListDatesFiles;
 import version2.prototype.download.RegistrationException;
-import version2.prototype.download.ModisNBAR.ModisNBARQCDownloader;
 import version2.prototype.util.DataFileMetaData;
 import version2.prototype.util.DatabaseConnection;
 import version2.prototype.util.DatabaseConnector;
@@ -117,7 +116,7 @@ public class ModisNBARV6QCGlobalDownloader extends GlobalDownloader
 
                     if (f != null)
                     {
-                        ModisNBARQCDownloader downloader = new ModisNBARQCDownloader(dd, outFolder, metaData, f);
+                        ModisNBARV6QCDownloader downloader = new ModisNBARV6QCDownloader(dd, outFolder, metaData, f);
 
                         try{
                             downloader.download();
