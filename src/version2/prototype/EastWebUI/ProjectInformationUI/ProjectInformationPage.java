@@ -566,7 +566,7 @@ public class ProjectInformationPage {
                 hDataset.GetGeoTransform(adfGeoTransform);
                 {
                     if (adfGeoTransform[2] == 0.0 && adfGeoTransform[4] == 0.0) {
-                        res = "" + adfGeoTransform[1];
+                        res = "" + ((int) (adfGeoTransform[1] + 0.5));
                     }
                 }
 
