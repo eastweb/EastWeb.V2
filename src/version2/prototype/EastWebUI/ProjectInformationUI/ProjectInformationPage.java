@@ -663,8 +663,8 @@ public class ProjectInformationPage {
             workingDirectory.setText(project.GetWorkingDir());
             maskFile.setEnabled(false);
             maskFile.setText(project.GetMaskingFile());
-            resolutionTextField.setEnabled(false);
-            resolutionTextField.setText((project.GetMaskingResolution() != null) ? project.GetMaskingResolution().toString() : null);
+            //  resolutionTextField.setEnabled(false);
+            // resolutionTextField.setText((project.GetMaskingResolution() != null) ? project.GetMaskingResolution().toString() : null);
             masterShapeTextField.setEnabled(false);
             masterShapeTextField.setText(project.GetMasterShapeFile());
             timeZoneComboBox.setEnabled(false);
