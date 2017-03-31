@@ -70,6 +70,13 @@ public abstract class Mozaic {
         if (!(new File(outputFolder)).exists())
         {   FileUtils.forceMkdir(new File(outputFolder)); }
 
+        for (File mInput : inputFiles) {
+            File f = new File(outputFolder, mInput.getName());
+            if(f.exists()) {
+                f.delete();
+            }
+        }
+
         String [] bandFiles = bandNames(inputFiles);
 
         mosaicTiles(bandFiles, bands);
@@ -154,9 +161,10 @@ public abstract class Mozaic {
                 String command = "./lib/gdal/gdalwarp --config GDAL_CACHEMAX 1000 -wm 1000 "
                         + bandNames[i] + " " +outputFile;
                 p = Runtime.getRuntime().exec(command);
+                p.waitFor();
             }
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
