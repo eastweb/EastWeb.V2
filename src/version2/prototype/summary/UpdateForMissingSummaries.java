@@ -89,12 +89,15 @@ public class UpdateForMissingSummaries {
     public static boolean findMissingSummaries(Connection con, final String rootDir, final String globalSchema, final String projectSchema, final String projectName, final LocalDate startDate,
             final String summaryName, final Integer inDayCount, final Integer outDayCount, final String compStrategy, final Boolean CompositesContinueIntoNextYear) throws NumberFormatException, ClassNotFoundException, SQLException, FileNotFoundException {
         final String projectRoot;
+        String downloadDir;
         boolean summariesMissing = false;
 
         if(rootDir.endsWith("\\") || rootDir.endsWith("/")) {
             projectRoot = rootDir + projectName + "\\";
+            downloadDir = rootDir + "\\";
         } else {
             projectRoot = rootDir + "\\" + projectName + "\\";
+            downloadDir = rootDir + "\\";
         }
         String[] plugins = new File(projectRoot).list(new FilenameFilter(){
             @Override
@@ -323,8 +326,28 @@ public class UpdateForMissingSummaries {
                     //                        }
                     //                    });
 
+                    String downloadRoot = downloadDir.replace("\\Projects\\", "\\Downloads\\") + plugin + "\\data\\" + year + "\\";
+                    File[] days = new File(downloadRoot).listFiles();
+                    Integer originDate;
+
+                    if(days != null)
+                    {
+                        originDate = Integer.parseInt(days[0].getName());
+                    }
+                    else
+                    {
+                        originDate = startDate.getDayOfYear();
+                    }
+
                     for(Integer validDay : validDays.get(Integer.parseInt(year)))
                     {
+                        if((year.equals("" + startDate.getYear()) && validDay < originDate) ||
+                                (plugin.equals("ModisNBARV6") && ((year.equals("2001") && (validDay.equals(174) || validDay.equals(175) || validDay.equals(176) || validDay.equals(177))) ||
+                                        (year.equals("2012") && validDay.equals(212)))))
+                        {
+                            continue;
+                        }
+
                         if(!new File(yearRoot + String.format("%03d", validDay) + ".csv").exists())
                         {
                             missingDates.addDate(plugin, index, summaryName, Integer.parseInt(year), validDay);
