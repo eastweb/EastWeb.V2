@@ -4,11 +4,11 @@
 <DownloadDir>d:\EASTWeb\data\Downloads\</DownloadDir>
 <Database>
 <GlobalSchema>EASTWeb</GlobalSchema>
-<HostName>127.0.0.1</HostName>
+<HostName>localhost</HostName>
 <Port>5432</Port>
-<DatabaseName>epidemiadb</DatabaseName>
-<UserName>epidemiausr</UserName>
-<PassWord>sieze7Yai6ma</PassWord>
+<DatabaseName>postgres</DatabaseName>
+<UserName>postgres</UserName>
+<PassWord>eastweb</PassWord>
 <MaxNumOfConnectionsPerInstance>50</MaxNumOfConnectionsPerInstance>
 </Database>
 <Output>
