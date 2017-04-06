@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <config>
-<ErrorLogDir>C:\EASTWeb\</ErrorLogDir>
-<DownloadDir>C:\EASTWeb\Downloads\</DownloadDir>
+<ErrorLogDir>d:\EASTWeb\</ErrorLogDir>
+<DownloadDir>d:\EASTWeb\data\Downloads\</DownloadDir>
 <Database>
 <GlobalSchema>EASTWeb</GlobalSchema>
-<HostName>localhost</HostName>
+<HostName>127.0.0.1</HostName>
 <Port>5432</Port>
-<DatabaseName>postgres</DatabaseName>
-<UserName>postgres</UserName>
-<PassWord>eastweb</PassWord>
+<DatabaseName>epidemiadb</DatabaseName>
+<UserName>epidemiausr</UserName>
+<PassWord>sieze7Yai6ma</PassWord>
 <MaxNumOfConnectionsPerInstance>50</MaxNumOfConnectionsPerInstance>
 </Database>
 <Output>

@@ -217,7 +217,8 @@ public class SummaryWorker extends ProcessWorker {
     @Override
     public boolean verifyResults() {
 
-        String url = "jdbc:postgresql://localhost:5432/" + configInstance.getDatabaseName();
+        String url = "jdbc:postgresql://localhost:" + configInstance.getPort() + "/" + configInstance.getDatabaseName();
+
         Connection con = null;
         boolean allGood = true;
         try {
@@ -225,7 +226,8 @@ public class SummaryWorker extends ProcessWorker {
 
             for(ProjectInfoSummary summary: projectInfoFile.GetSummaries())
             {
-                if(!UpdateForMissingSummaries.findMissingSummaries(con, projectInfoFile.GetWorkingDir() + "\\projects", configInstance.getGlobalSchema(), Schemas.getSchemaName(projectInfoFile.GetProjectName(), pluginInfo.GetName()),
+                if(!UpdateForMissingSummaries.findMissingSummaries(con, projectInfoFile.GetWorkingDir() + "\\projects", configInstance.getGlobalSchema(), 
+                        configInstance.getPort(), Schemas.getSchemaName(projectInfoFile.GetProjectName(), pluginInfo.GetName()),
                         projectInfoFile.GetProjectName(), projectInfoFile.GetStartDate(), "Summary " + summary.GetID(), pluginMetaData.DaysPerInputData, fileStores.get(summary.GetID()).compStrategy.maxNumberOfDaysInComposite(),
                         fileStores.get(summary.GetID()).compStrategy.getClass().getSimpleName(), pluginMetaData.CompositesContinueIntoNextYear)) {
                     allGood = false;

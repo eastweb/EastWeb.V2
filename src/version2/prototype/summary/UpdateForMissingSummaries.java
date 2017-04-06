@@ -28,6 +28,7 @@ import version2.prototype.util.Schemas;
  */
 public class UpdateForMissingSummaries {
 
+    private static int portNo = 5432;
     /**
      * @param args
      * @throws ClassNotFoundException
@@ -50,6 +51,7 @@ public class UpdateForMissingSummaries {
         final String user = args[1];
         final String password = args[2];
         final String schema = args[3];
+        final int portNo = 5432;
         final String projectName = args[4];
         final String start = args[5];
         final String compStrategy = args[6];
@@ -59,13 +61,14 @@ public class UpdateForMissingSummaries {
 
         Class.forName("org.postgresql.Driver");
         String url = "jdbc:postgresql://localhost:5432/" + databaseName;
+
         Connection con = DriverManager.getConnection(url, user, password);
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate = LocalDate.parse(start, dtf);
 
         final String rootDir = "C:\\eastweb\\Projects";
-        findMissingSummaries(con, rootDir, "EASTWeb", schema, projectName, startDate, summaryName, inDayCount, outDayCount, compStrategy, true);
+        findMissingSummaries(con, rootDir, "EASTWeb", portNo, schema,  projectName, startDate, summaryName, inDayCount, outDayCount, compStrategy, true);
         con.close();
     }
 
@@ -86,11 +89,13 @@ public class UpdateForMissingSummaries {
      * @throws SQLException
      * @throws FileNotFoundException
      */
-    public static boolean findMissingSummaries(Connection con, final String rootDir, final String globalSchema, final String projectSchema, final String projectName, final LocalDate startDate,
+    public static boolean findMissingSummaries(Connection con, final String rootDir, final String globalSchema, final int port, final String projectSchema, final String projectName, final LocalDate startDate,
             final String summaryName, final Integer inDayCount, final Integer outDayCount, final String compStrategy, final Boolean CompositesContinueIntoNextYear) throws NumberFormatException, ClassNotFoundException, SQLException, FileNotFoundException {
         final String projectRoot;
         String downloadDir;
         boolean summariesMissing = false;
+
+        portNo = port;
 
         if(rootDir.endsWith("\\") || rootDir.endsWith("/")) {
             projectRoot = rootDir + projectName + "\\";
@@ -587,7 +592,7 @@ public class UpdateForMissingSummaries {
         {
             try{
                 Class.forName("org.postgresql.Driver");
-                String url = "jdbc:postgresql://localhost:5432/" + databaseName;
+                String url = "jdbc:postgresql://localhost:" + portNo + "/" + databaseName;
                 Connection con = DriverManager.getConnection(url, user, password);
                 Statement stmt = con.createStatement();
                 ResultSet rs = null;

@@ -83,7 +83,7 @@ public class IMERGListDatesFiles extends ListDatesFiles{
                     ArrayList<String> fileNames = new ArrayList<String>();
 
                     //filename pattern:
-                    //3B-DAY-GIS\.MS\.MRG\.3IMERG\.(\d{8})-S000000-E235959\.(\d{4}|\d{5})\.V03D\.tif
+                    //3B-DAY-GIS\.MS\.MRG\.3IMERG\.(\d{8})-S000000-E235959\.(\d{4}|\d{5})\.V(\d{2})[A-Z]\.tif
                     //if (file.isFile() &&
                     if (mData.fileNamePattern.matcher(file.getName()).matches())
                     {
