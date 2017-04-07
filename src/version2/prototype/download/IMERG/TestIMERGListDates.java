@@ -28,7 +28,7 @@ public class TestIMERGListDates
         int filesPerDay = 1;
         String datePatternStr = "\\d{4}";
         String fileNamePatternStr =
-                "3B-DAY-GIS\\.MS\\.MRG\\.3IMERG\\.(\\d{8})-S000000-E235959\\.(\\d{4}|\\d{5})\\.V03D\\.tif";
+                "3B-DAY-GIS\\.MS\\.MRG\\.3IMERG\\.(\\d{8})-S000000-E235959\\.(\\d{4}|\\d{5})\\.V(\\d{2})[A-Z]\\.tif";
 
         LocalDate ld = LocalDate.parse("Mon Dec 28 00:00:01 CDT 2015", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));
         //LocalDate ld = LocalDate.parse("Sun Jun 01 00:00:01 CDT 2014", DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz uuuu"));

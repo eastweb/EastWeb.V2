@@ -28,7 +28,7 @@ public class IMERG_RTListDatesFiles extends ListDatesFiles{
 
     // although exactly the same, the pattern fetched from the plugin file does not work
     private String fileNamePatternStr =
-            "3B-HHR-L\\.MS\\.MRG\\.3IMERG\\.(\\d{8})-S233000-E235959\\.1410\\.V03E\\.1day\\.tif((\\.gz)?)";
+            "3B-HHR-L\\.MS\\.MRG\\.3IMERG\\.(\\d{8})-S233000-E235959\\.1410\\.V(\\d{2})[A-Z]\\.1day\\.tif((\\.gz)?)";
 
     public IMERG_RTListDatesFiles(DataDate date, DownloadMetaData data, ProjectInfoFile project) throws IOException
     {
@@ -137,14 +137,15 @@ public class IMERG_RTListDatesFiles extends ListDatesFiles{
             ArrayList<String> fileNames = new ArrayList<String>();
 
             //filename pattern:
-            //3B-HHR-L\.MS\.MRG\.3IMERG\.(\d{8})-S233000-E235959\.1410\.V03E\.1day\.tif((\.gz)?)
+            //3B-HHR-L\.MS\.MRG\.3IMERG\.(\d{8})-S233000-E235959\.1410\.V(\d{2})[A-Z]\.1day\.tif((\.gz)?)
             /*  if (file.isFile() &&
                     mData.fileNamePattern.matcher(file.getName()).matches())
              */
+            //System.out.println(Pattern.compile(fileNamePatternStr).matcher(file.getName()).matches());
             if (file.isFile() &&
                     Pattern.compile(fileNamePatternStr).matcher(file.getName()).matches())
             {
-
+                // System.out.println(file.getName());
                 fileNames.add(file.getName());
 
                 String[] str = file.getName().split("[.]");

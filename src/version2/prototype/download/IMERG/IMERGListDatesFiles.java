@@ -85,8 +85,10 @@ public class IMERGListDatesFiles extends ListDatesFiles{
                     //filename pattern:
                     //3B-DAY-GIS\.MS\.MRG\.3IMERG\.(\d{8})-S000000-E235959\.(\d{4}|\d{5})\.V(\d{2})[A-Z]\.tif
                     //if (file.isFile() &&
+
                     if (mData.fileNamePattern.matcher(file.getName()).matches())
                     {
+                        // System.out.println(file.getName());
                         fileNames.add(file.getName());
 
                         // always get the last hour of the day -  23
