@@ -24,7 +24,7 @@ public class Mask {
     // mask file resolution
     protected Integer maskRes;
     // data file resolution;
-    protected Integer dataRes;
+    protected Integer projRes;
     protected final Boolean deleteInputDirectory;
     private Integer noDataValue;
 
@@ -46,8 +46,9 @@ public class Mask {
             maskFile = null;
         }
 
+        // the mask resolution with the projection resolution
         maskRes = data.getMaskResolution();
-        dataRes = data.getDataResolution();
+        projRes = data.getProjection().getPixelSize();
 
         this.deleteInputDirectory = deleteInputDirectory;
         noDataValue = data.getNoDataValue();
@@ -61,10 +62,10 @@ public class Mask {
         if (!outputDir.exists())
         {   FileUtils.forceMkdir(outputDir);   }
 
-        if ((maskFile != null) && maskRes.compareTo(dataRes) == 0)
+        if ((maskFile != null) && maskRes.compareTo(projRes) == 0)
         {
             // do masking only when a mask file exist
-            // and the mask resolution equals to the data resolution
+            // and the mask resolution equals to the the projection resolution
             for (File mInput : inputFiles) {
                 File f = new File(outputFolder, mInput.getName());
                 if(f.exists()) {
