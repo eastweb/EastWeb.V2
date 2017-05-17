@@ -103,6 +103,13 @@ public class IMERGListDatesFiles extends ListDatesFiles{
 
             ftpC.disconnect();
             ftpC = null;
+
+            /* for (Map.Entry<DataDate, ArrayList<String>> entry : tempMapDatesToFiles.entrySet())
+            {
+                System.out.println(entry.getKey() + "/" + entry.getValue());
+            }
+             */
+
             return tempMapDatesToFiles;
         }
         catch (Exception e)
